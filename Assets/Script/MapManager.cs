@@ -69,30 +69,43 @@ public class MapManager : MonoBehaviour
 
     void MatchChack(GameObject[,] arr)
     {
-        //게임오브젝트 배열을 복사해오는것이 부하나 버그를 불러올 수 있는가?
         int count = 0;
         int prevSpecies = -1;
 
         //x 확인
         for (int y = 0; y < arr.GetLength(0); y++)
         {
+            count = 0;
+
             for (int x = 0; x < arr.GetLength(1); x++)
             {
                 if (arr[y,x].GetComponent<Block>().species == prevSpecies)
                 {
                     count++;
+                    arr[y, x].GetComponent<Block>().isMatchChack = 0;
                 }
                 else
                 {
+                    if(count >= 3)
+                    {
+                        for(int i = 0; i < count; i++)
+                        {
+                            arr[y, x-i].GetComponent<Block>().isMatchChack = 1;
+                        }
+                    }
                     prevSpecies = arr[y, x].GetComponent<Block>().species;
+                }
+            }
+
+            if (count >= 3)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    arr[y, arr.GetLength(1) - 1 - i].GetComponent<Block>().isMatchChack = 1;
                 }
             }
         }
 
-        if(count >= 3)
-        {
-            //터뜨리기
-        }
 
         for (int x = 0; x < Map.GetLength(1); x++)
         {
@@ -101,22 +114,49 @@ public class MapManager : MonoBehaviour
                 if (Map[y, x].GetComponent<Block>().species == prevSpecies)
                 {
                     count++;
+
+                    if (arr[y, x].GetComponent<Block>().isMatchChack == -1)
+                    {
+                        arr[y, x].GetComponent<Block>().isMatchChack = 0;
+                    }
                 }
                 else
                 {
+                    if (count >= 3)
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            if(arr[y - i, x].GetComponent<Block>().isMatchChack == 1)
+                            {
+                                arr[y - i, x].GetComponent<Block>().isMatchChack = 3;
+                            }
+                            else
+                            {
+                                arr[y - i, x].GetComponent<Block>().isMatchChack = 2;
+                            }
+                        }
+                    }
                     prevSpecies = Map[y, x].GetComponent<Block>().species;
+                }
+
+                if (count >= 3)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (arr[y - i, x].GetComponent<Block>().isMatchChack == 1)
+                        {
+                            arr[y - i, x].GetComponent<Block>().isMatchChack = 3;
+                        }
+                        else
+                        {
+                            arr[y - i, x].GetComponent<Block>().isMatchChack = 2;
+                        }
+                    }
                 }
             }
         }
 
-        if (count >= 3)
-        {
-            //터뜨리기
-        }
-
         return;
-
-        //터트려야할 것을 어떻게 반환할것인가?
     }
 
     void CanMakeMatch()
@@ -125,7 +165,6 @@ public class MapManager : MonoBehaviour
         {
             for (int x = 0; x < Map.GetLength(1); x++)
             {
-                Map[y,x].GetComponent<Block>().isMatchChack = true;
                 GameObject[,] virtualMap;
 
                 if (x > 0)

@@ -5,5 +5,5 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
     public int x, y, species;
-    public bool isMatchChack = false;
+    public int isMatchChack = -1;   //-1.unconfirmed 0.not match 1.width 2.length 3.both
 }
