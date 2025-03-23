@@ -160,6 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d970d6f6e7f75e441b0d1427f27bccd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Map: {fileID: 797188080}
   isCanClick: 1
 --- !u!20 &519420031
 Camera:
@@ -228,6 +229,7 @@ GameObject:
   m_Component:
   - component: {fileID: 797188083}
   - component: {fileID: 797188082}
+  - component: {fileID: 797188081}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -235,6 +237,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &797188081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797188080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 577f8973df94edc4d92e076396ff9fb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &797188082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,12 +261,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d05f81b0dc40970439a859fac6c6b7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blocks:
-  - {fileID: 4238355767407492648, guid: 743b0f188a24b6b4e85384cc9e1e794b, type: 3}
-  - {fileID: 2485113073056696291, guid: 5f678b8ddf093124780d321e1cb1147d, type: 3}
-  - {fileID: 3339186923668902701, guid: be8e0039438ff1d4fb17df911dbd0818, type: 3}
-  - {fileID: 6613646768550894782, guid: 498564af33bb3a245a6f7d279dfe4608, type: 3}
-  - {fileID: 6735002808020267794, guid: 4e2babe4569f4db4d8ee3c60904ced5d, type: 3}
+  Shapes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &797188083
 Transform:
   m_ObjectHideFlags: 0

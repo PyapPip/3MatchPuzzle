@@ -3,74 +3,84 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
-    public int[,,] MapData = new int[1, 5, 5];
-    public GameObject[] blocks = new GameObject[5];
-    public GameObject[,] Map;
+    public int[,,] LevelData = new int[1, 5, 5];
+    public GameObject[] Shapes = new GameObject[5];
 
-    private GameObject temp;
-
-    private void CreateMap()
-    {
-        Map = new GameObject[MapData.GetLength(1), MapData.GetLength(2)];
-
-        for (int y = 0; y < MapData.GetLength(1); y++)
-        {
-            for (int x = 0; x < MapData.GetLength(2); x++)
-            {
-                GameObject instance = Instantiate(blocks[MapData[0, y, x]], this.transform);
-                instance.GetComponent<Block>().x = x;
-                instance.GetComponent<Block>().y = y;
-                instance.GetComponent<Block>().species = MapData[0, y, x];
-                instance.transform.position = new Vector2(x, -y);
-
-                Map[y, x] = instance;
-            }
-        }
-
-        this.gameObject.transform.position = new Vector3 (-MapData.GetLength(2)/2, MapData.GetLength(1)/2, 0);
-    }
+    MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
 
     public void ChangeBlock(GameObject block, int dir)
     {
-        //dir 1.left 2.right 3.down 4.up
+        GameObject[,] mapData = mapComponent.MapData;
+        int[,] matchData = mapComponent.MatchData;
+        GameObject[,] virtualMap;
 
+        int x = block.GetComponent<Block>().x;
+        int y = block.GetComponent<Block>().y;
+
+        virtualMap = mapData;
+        GameObject originalTile = virtualMap[y, x];
+        GameObject changeTile = null;
+
+        //dir 1.left 2.right 3.down 4.up
         //바꾸러는 방향이 유효한지 확인
-        //오브젝트 좌표 변경
         switch (dir)
         {
             case 1:
-                if(block.GetComponent<Block>().x >= 1)
+                if (block.GetComponent<Block>().x >= 1)
                 {
-                    //터질 수 있는지 확인
-                    //터질 수 있다면 자릴 바꾼 후 터뜨리기
-                    //없다면 자릴 바꿨다 돌아오는 연출
+                    changeTile = virtualMap[y, x - 1];
                 }
                 break;
             case 2:
-                if (block.GetComponent<Block>().x < Map.GetLength(0))
+                if (block.GetComponent<Block>().x < mapData.GetLength(0))
                 {
-                    
+                    changeTile = virtualMap[y, x + 1];
                 }
                 break;
             case 3:
-                if(block.GetComponent<Block>().y < Map.GetLength(1))
+                if (block.GetComponent<Block>().y < mapData.GetLength(1))
                 {
-                    
+                    changeTile = virtualMap[y - 1, x];
                 }
                 break;
             case 4:
-                if(block.GetComponent<Block>().y >= 1)
+                if (block.GetComponent<Block>().y >= 1)
                 {
-                    
+                    changeTile = virtualMap[y, x + 1];
                 }
                 break;
         }
+
+        if (changeTile == null)
+            return;
+
+        (originalTile, changeTile) = (changeTile, originalTile);
+        MatchChack(virtualMap);
+
+        //터질 수 있다면 자릴 바꾼 후 터뜨리기
+        for(int i = 0; i < mapData.GetLength(0); i++)
+        {
+            for(int j = 0; j < mapData.GetLength(1); j++)
+            {
+                if(matchData[i, j] > 0)
+                {
+                    //바꾸기
+                    return;
+                }
+            }
+        }
+        //없다면 자릴 바꿨다 돌아오는 연출
+
+        mapComponent.MatchDataReSet();
     }
 
+    //
     void MatchChack(GameObject[,] arr)
     {
         int count = 0;
-        int prevSpecies = -1;
+        int prevShapes = -1;
+        GameObject[,] mapData = mapComponent.MapData;
+        int[,] matchData = mapComponent.MatchData;
 
         //x 확인
         for (int y = 0; y < arr.GetLength(0); y++)
@@ -79,78 +89,76 @@ public class MapManager : MonoBehaviour
 
             for (int x = 0; x < arr.GetLength(1); x++)
             {
-                if (arr[y,x].GetComponent<Block>().species == prevSpecies)
+                Block tagetBlock = arr[y, x].GetComponent<Block>();
+                if (tagetBlock.species == prevShapes)
                 {
                     count++;
-                    arr[y, x].GetComponent<Block>().isMatchChack = 0;
-                }
-                else
-                {
-                    if(count >= 3)
-                    {
-                        for(int i = 0; i < count; i++)
-                        {
-                            arr[y, x-i].GetComponent<Block>().isMatchChack = 1;
-                        }
-                    }
-                    prevSpecies = arr[y, x].GetComponent<Block>().species;
-                }
-            }
-
-            if (count >= 3)
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    arr[y, arr.GetLength(1) - 1 - i].GetComponent<Block>().isMatchChack = 1;
-                }
-            }
-        }
-
-
-        for (int x = 0; x < Map.GetLength(1); x++)
-        {
-            for (int y = 0; y < Map.GetLength(0); y++)
-            {
-                if (Map[y, x].GetComponent<Block>().species == prevSpecies)
-                {
-                    count++;
-
-                    if (arr[y, x].GetComponent<Block>().isMatchChack == -1)
-                    {
-                        arr[y, x].GetComponent<Block>().isMatchChack = 0;
-                    }
-                }
-                else
-                {
-                    if (count >= 3)
-                    {
-                        for (int i = 0; i < count; i++)
-                        {
-                            if(arr[y - i, x].GetComponent<Block>().isMatchChack == 1)
-                            {
-                                arr[y - i, x].GetComponent<Block>().isMatchChack = 3;
-                            }
-                            else
-                            {
-                                arr[y - i, x].GetComponent<Block>().isMatchChack = 2;
-                            }
-                        }
-                    }
-                    prevSpecies = Map[y, x].GetComponent<Block>().species;
+                    continue;
                 }
 
                 if (count >= 3)
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        if (arr[y - i, x].GetComponent<Block>().isMatchChack == 1)
+                        matchData[y, x - i] = 1;
+                    }
+                }
+                prevShapes = tagetBlock.species;
+            }
+
+            if (count >= 3)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    matchData[y, arr.GetLength(1) - 1 - i] = 1;
+                }
+            }
+        }
+
+        //y 확인
+        for (int x = 0; x < mapData.GetLength(1); x++)
+        {
+            for (int y = 0; y < mapData.GetLength(0); y++)
+            {
+                Block tagetBlock = mapData[y, x].GetComponent<Block>();
+                if (tagetBlock.species == prevShapes)
+                {
+                    count++;
+                    if (matchData[y,x] == -1)
+                    {
+                        matchData[y,x] = 0;
+                    }
+                    continue;
+                }
+
+                if (count >= 3)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (matchData[y - i, x] == 1)
                         {
-                            arr[y - i, x].GetComponent<Block>().isMatchChack = 3;
+                            matchData[y - i, x] = 3;
                         }
                         else
                         {
-                            arr[y - i, x].GetComponent<Block>().isMatchChack = 2;
+                            matchData[y - i, x] = 2;
                         }
+                    }
+                }
+                prevShapes = tagetBlock.species;
+            }
+
+            if (count >= 3)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    if (matchData[arr.GetLength(0) - 1 - i, x] == 1)
+                    {
+                        matchData[arr.GetLength(0) - 1 - i, x] = 3;
+                    }
+                    else
+                    {
+                        matchData[arr.GetLength(0) - 1 - i, x] = 2;
                     }
                 }
             }
@@ -159,38 +167,42 @@ public class MapManager : MonoBehaviour
         return;
     }
 
+    //블럭 위치를 교환하였을때 3매치가 가능한지 확인하는 함수
     void CanMakeMatch()
     {
-        for (int y = 0; y < Map.GetLength(0); y++)
+        GameObject[,] map = mapComponent.MapData;
+        int[,] mapData = mapComponent.MatchData;
+
+        for (int y = 0; y < map.GetLength(0); y++)
         {
-            for (int x = 0; x < Map.GetLength(1); x++)
+            for (int x = 0; x < map.GetLength(1); x++)
             {
                 GameObject[,] virtualMap;
 
                 if (x > 0)
                 {
-                    virtualMap = Map;
+                    virtualMap = map;
                     (virtualMap[y, x], virtualMap[y, x - 1]) = (virtualMap[y, x - 1], virtualMap[y, x]);
                     MatchChack(virtualMap);
                 }
 
-                if(x < Map.GetLength(1))
+                if(x < map.GetLength(1))
                 {
-                    virtualMap = Map;
+                    virtualMap = map;
                     (virtualMap[y, x], virtualMap[y, x + 1]) = (virtualMap[y, x + 1], virtualMap[y, x]);
                     MatchChack(virtualMap);
                 }
 
                 if (y > 0)
                 {
-                    virtualMap = Map;
+                    virtualMap = map;
                     (virtualMap[y, x], virtualMap[y - 1, x]) = (virtualMap[y - 1, x], virtualMap[y, x]);
                     MatchChack(virtualMap);
                 }
 
-                if (y < Map.GetLength(0))
+                if (y < map.GetLength(0))
                 {
-                    virtualMap = Map;
+                    virtualMap = map;
                     (virtualMap[y, x], virtualMap[y + 1, x]) = (virtualMap[y + 1, x], virtualMap[y, x]);
                     MatchChack(virtualMap);
                 }
@@ -198,11 +210,17 @@ public class MapManager : MonoBehaviour
         }
 
         //터뜨릴 수 없다면 재배치
+        //터뜨릴 수 없는지 확인하는 코드 필요
+        Debug.Log("ㅋㅋ");
     }
+
+    
 
     void Start()
     {
-        MapData = new int[1, 5, 5]{
+
+        // 모듈화 예정
+        LevelData = new int[1, 5, 5]{
             {
                 { 0, 1, 2, 1, 0},
                 { 1, 2, 0, 2, 3},
@@ -212,6 +230,15 @@ public class MapManager : MonoBehaviour
             }
         };
 
-        CreateMap();
+        mapComponent.CreateMap(LevelData, Shapes);
     }
 }
+
+
+/*
+ * CanMakeMatch 함수를 이용해서 
+ * 
+ * 
+ * 
+ * 
+*/

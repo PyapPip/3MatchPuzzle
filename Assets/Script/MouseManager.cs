@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class MouseManager : MonoBehaviour
 {
+    public GameObject Map;
     public bool isCanClick = true;
 
     private GameObject selectedBlocks;
@@ -25,25 +26,25 @@ public class MouseManager : MonoBehaviour
         if (Input.GetMouseButton(0) && selectedBlocks != null)
         {
             mouseClickPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
-
+            MapManager m = Map.GetComponent<MapManager>();
             if (mouseClickPos.x - selectedBlocks.transform.position.x < -1)
             {
-                this.gameObject.GetComponent<MapManager>().ChangeBlock(selectedBlocks, 1);
+                m.ChangeBlock(selectedBlocks, 1);
             }
 
             else if (mouseClickPos.x - selectedBlocks.transform.position.x > 1)
             {
-                this.gameObject.GetComponent<MapManager>().ChangeBlock(selectedBlocks, 2);
+                m.ChangeBlock(selectedBlocks, 2);
             }
 
             else if (mouseClickPos.y - selectedBlocks.transform.position.y < -1)
             {
-                this.gameObject.GetComponent<MapManager>().ChangeBlock(selectedBlocks, 3);
+                m.ChangeBlock(selectedBlocks, 3);
             }
 
             else if (mouseClickPos.y - selectedBlocks.transform.position.y > 1)
             {
-                this.gameObject.GetComponent<MapManager>().ChangeBlock(selectedBlocks, 4);
+                m.ChangeBlock(selectedBlocks, 4);
             }
         }
 
