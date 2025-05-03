@@ -4,7 +4,7 @@ using UnityEngine;
 public class MapManager : MonoBehaviour
 {
     public int[,,] LevelData = new int[1, 5, 5];
-    public GameObject[] Shapes = new GameObject[5];
+
 
     MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
 
@@ -230,7 +230,7 @@ public class MapManager : MonoBehaviour
             }
         };
 
-        mapComponent.CreateMap(LevelData, Shapes);
+        mapComponent.CreateMap(LevelData);
     }
 }
 

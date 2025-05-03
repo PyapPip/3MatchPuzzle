@@ -5,6 +5,7 @@ using UnityEngine;
 public class MapComponent : MonoBehaviour
 {
     public GameObject[,] MapData;
+    public GameObject[] Shapes = new GameObject[5];
     /// <summary>
     /// -1 = 검사되지 않음, 0 = 검사됨, 1 = x축 매치, 2 = y축 매치, 3 = x,y 매치
     /// </summary> 
@@ -12,7 +13,7 @@ public class MapComponent : MonoBehaviour
 
     private int SpeciesKind = 0;
 
-    public void CreateMap(int[,,] levelData, GameObject[] shapes)
+    public void CreateMap(int[,,] levelData)
     {
 
         MapData = new GameObject[levelData.GetLength(1), levelData.GetLength(2)];
@@ -22,19 +23,17 @@ public class MapComponent : MonoBehaviour
         {
             for (int x = 0; x < levelData.GetLength(2); x++)
             {
-                GameObject instance = Instantiate(shapes[levelData[0, y, x]], this.transform);
+                CreateBlock(levelData[0, y, x], x, y);
+                GameObject instance = Instantiate(Shapes[levelData[0, y, x]], this.transform);
                 instance.GetComponent<Block>().x = x;
                 instance.GetComponent<Block>().y = y;
                 instance.GetComponent<Block>().species = levelData[0, y, x];
                 instance.transform.position = new Vector2(x, -y);
-                MatchData[y, x] = -1;
 
-                if(SpeciesKind< levelData[0,y,x])
+                if (SpeciesKind < levelData[0, y, x])
                 {
                     SpeciesKind = levelData[0, y, x];
                 }
-
-                MapData[y, x] = instance;
             }
         }
 
@@ -52,6 +51,8 @@ public class MapComponent : MonoBehaviour
         }
     }
 
+    //블럭을 파괴하는 코드만 남기고 매치된 블럭을 파괴하는건 매니져에서.
+    /*
     public void DestroyMatchedBlocks()
     {
         GameObject temp;
@@ -70,18 +71,20 @@ public class MapComponent : MonoBehaviour
             }
         }
     }
+    */
+
 
     //블럭의 종류는 이 스크립트가 가지고있는게 맞지 않을까?
     //인스턴스의 이름으로도 충분히 어떤 종류의 조각인지 인식할 순 있다.
-    public void CreateBlock(GameObject block, int x, int y)
+    public void CreateBlock(int shapes, int x, int y)
     {
-        //createmap의 블럭 생성부분을 가져와 사용, 이 함수로 대채해주자
-        //Random.Range(0, SpeciesKind);
-        GameObject instance = Instantiate(, this.transform);
+        GameObject instance = Instantiate(Shapes[shapes], this.transform);
         instance.GetComponent<Block>().x = x;
         instance.GetComponent<Block>().y = y;
-        instance.GetComponent<Block>().species = levelData[0, y, x];
+        instance.GetComponent<Block>().species = shapes;
         instance.transform.position = new Vector2(x, -y);
+
         MatchData[y, x] = -1;
+        MapData[y, x] = instance;
     }
 }
