@@ -58,17 +58,23 @@ public class MapManager : MonoBehaviour
         MatchChack(virtualMap);
 
         //터질 수 있다면 자릴 바꾼 후 터뜨리기
-        for(int i = 0; i < mapData.GetLength(0); i++)
+        if(matchData[y,x] >= 1 || matchData[changeTile.GetComponent<Block>().y, changeTile.GetComponent<Block>().x] >= 1)
         {
-            for(int j = 0; j < mapData.GetLength(1); j++)
+            for (int i = 0; i < mapData.GetLength(0); i++)
             {
-                if(matchData[i, j] > 0)
+                for (int j = 0; j < mapData.GetLength(1); j++)
                 {
-                    //바꾸기
-                    return;
+                    if (matchData[i, j] > 0)
+                    {
+                        //폭발! 
+                        return;
+                    }
                 }
             }
         }
+        /*
+        
+        */
         //없다면 자릴 바꿨다 돌아오는 연출
 
         mapComponent.MatchDataReSet();
