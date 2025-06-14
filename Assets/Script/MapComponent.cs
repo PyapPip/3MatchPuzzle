@@ -11,6 +11,7 @@ public class MapComponent : MonoBehaviour
     /// </summary> 
     public int[,] MatchData;
 
+    private int[] clearedBlockCount;
     private int SpeciesKind = 0;
 
     public void CreateMap(int[,,] levelData)
@@ -18,7 +19,7 @@ public class MapComponent : MonoBehaviour
 
         MapData = new GameObject[levelData.GetLength(1), levelData.GetLength(2)];
         MatchData = new int[levelData.GetLength(1), levelData.GetLength(2)];
-
+        clearedBlockCount = new int[levelData.GetLength(2)];
         for (int y = 0; y < levelData.GetLength(1); y++)
         {
             for (int x = 0; x < levelData.GetLength(2); x++)
@@ -52,7 +53,6 @@ public class MapComponent : MonoBehaviour
     }
 
     //블럭을 파괴하는 코드만 남기고 매치된 블럭을 파괴하는건 매니져에서.
-    /*
     public void DestroyMatchedBlocks()
     {
         GameObject temp;
@@ -66,12 +66,10 @@ public class MapComponent : MonoBehaviour
                     MapData[y, x] = null;
                     Destroy(temp);
                     
-                    //특수블럭 생성은 여기서
                 }
             }
         }
     }
-    */
 
 
     //블럭의 종류는 이 스크립트가 가지고있는게 맞지 않을까?
