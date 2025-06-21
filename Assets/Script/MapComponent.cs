@@ -1,5 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using System;
 
 public class MapComponent : MonoBehaviour
 {
@@ -60,6 +60,26 @@ public class MapComponent : MonoBehaviour
                     blocksToSpawn[x]++;
                 }
             }
+        }
+    }
+
+    //ps. 블럭 파괴하면서 한번에 할 수 있지 않을까? = 코드를 합칠 수 있지 않나?
+    public void BlockReSpawn()
+    {
+        int s = UnityEngine.Random.Range(0, Shapes.GetLength(0));
+        for (int x = 0; x < MatchData.GetLength(1); x++)
+        {
+            GameObject instance = Instantiate(Shapes[s], this.transform);
+            instance.GetComponent<Block>().x = x;
+            //instance.GetComponent<Block>().y = ;
+            instance.GetComponent<Block>().species = s;
+            //instance.transform.position = new Vector2(x, - y);
+            /*
+            if (SpeciesKind < levelData[0, y, x])
+            {
+                SpeciesKind = levelData[0, y, x];
+            }
+            */
         }
     }
 
