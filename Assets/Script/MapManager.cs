@@ -77,7 +77,7 @@ public class MapManager : MonoBehaviour
         */
         //없다면 자릴 바꿨다 돌아오는 연출
 
-        mapComponent.MatchDataReSet();
+        mapComponent.DataReSet();
     }
 
     //
