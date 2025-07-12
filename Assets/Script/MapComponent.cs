@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Data;
 
 public class MapComponent : MonoBehaviour
 {
@@ -57,6 +58,11 @@ public class MapComponent : MonoBehaviour
                 {
                     Destroy(MapData[y, x]);
                     MapData[y, x] = null;
+                    for(int i = y; i >= 0; i--)
+                    {
+                        MapData[i + 1, x] = MapData[i, x];
+                        MapData[i, x] = null;
+                    }
                     blocksToSpawn[x]++;
                 }
             }
@@ -64,6 +70,10 @@ public class MapComponent : MonoBehaviour
     }
 
     //ps. 블럭 파괴하면서 한번에 할 수 있지 않을까? = 코드를 합칠 수 있지 않나?
+    //생성하는 x좌표에 맞춰 여러개를 위에 쌓는식으로 생성해주면 끝 아님?
+    //파괴하면서 y좌표의 이동이 일어날부분을 미리 바꿔야하지 않을까?
+    //파괴한 블럭의 위 블럭들의 y좌표를 1씩 내려주면 된다.
+    //블럭이 떨어지는 연출은 유니티 자체의 물리를 이용하면 되는거 아님?
     public void BlockReSpawn()
     {
         int s = UnityEngine.Random.Range(0, Shapes.GetLength(0));
