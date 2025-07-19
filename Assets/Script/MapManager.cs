@@ -173,6 +173,28 @@ public class MapManager : MonoBehaviour
         return;
     }
 
+    //생성하는 x좌표에 맞춰 여러개를 위에 쌓는식으로 생성해주면 끝 아님?
+    //파괴하면서 y좌표의 이동이 일어날부분을 미리 바꿔야하지 않을까?
+    //파괴한 블럭의 위 블럭들의 y좌표를 1씩 내려주면 된다.
+    //블럭이 떨어지는 연출은 유니티 자체의 물리를 이용하면 되는거 아님?
+    public void BlockReSpawn()
+    {
+        GameObject[,] mapData = mapComponent.MapData;
+        int[,] matchData = mapComponent.MatchData;
+
+        int s = UnityEngine.Random.Range(0, mapComponent.SpeciesKind);
+
+        for(int x = 0; x < mapComponent.blocksToSpawn.GetLength(0); x++)
+        {
+            for (int y = mapComponent.blocksToSpawn[x]; y >= 0;  y++)
+            {
+                Vector2 pos = new Vector2(x, y)
+                mapComponent.CreateBlock(s,x, y,)
+
+            }
+        }
+    }
+
     //블럭 위치를 교환하였을때 3매치가 가능한지 확인하는 함수
     void CanMakeMatch()
     {
@@ -239,12 +261,3 @@ public class MapManager : MonoBehaviour
         mapComponent.CreateMap(LevelData);
     }
 }
-
-
-/*
- * CanMakeMatch 함수를 이용해서 
- * 
- * 
- * 
- * 
-*/

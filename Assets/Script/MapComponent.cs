@@ -12,7 +12,7 @@ public class MapComponent : MonoBehaviour
     public int[,] MatchData;
     public int[] blocksToSpawn;
 
-    private int SpeciesKind = 0;
+    public int SpeciesKind = 0;
 
     public void CreateMap(int[,,] levelData)
     {
@@ -26,11 +26,6 @@ public class MapComponent : MonoBehaviour
             for (int x = 0; x < levelData.GetLength(2); x++)
             {
                 CreateBlock(levelData[0, y, x], x, y);
-                GameObject instance = Instantiate(Shapes[levelData[0, y, x]], this.transform);
-                instance.GetComponent<Block>().x = x;
-                instance.GetComponent<Block>().y = y;
-                instance.GetComponent<Block>().species = levelData[0, y, x];
-                instance.transform.position = new Vector2(x, -y);
 
                 if (SpeciesKind < levelData[0, y, x])
                 {
@@ -69,30 +64,6 @@ public class MapComponent : MonoBehaviour
         }
     }
 
-    //ps. 블럭 파괴하면서 한번에 할 수 있지 않을까? = 코드를 합칠 수 있지 않나?
-    //생성하는 x좌표에 맞춰 여러개를 위에 쌓는식으로 생성해주면 끝 아님?
-    //파괴하면서 y좌표의 이동이 일어날부분을 미리 바꿔야하지 않을까?
-    //파괴한 블럭의 위 블럭들의 y좌표를 1씩 내려주면 된다.
-    //블럭이 떨어지는 연출은 유니티 자체의 물리를 이용하면 되는거 아님?
-    public void BlockReSpawn()
-    {
-        int s = UnityEngine.Random.Range(0, Shapes.GetLength(0));
-        for (int x = 0; x < MatchData.GetLength(1); x++)
-        {
-            GameObject instance = Instantiate(Shapes[s], this.transform);
-            instance.GetComponent<Block>().x = x;
-            //instance.GetComponent<Block>().y = ;
-            instance.GetComponent<Block>().species = s;
-            //instance.transform.position = new Vector2(x, - y);
-            /*
-            if (SpeciesKind < levelData[0, y, x])
-            {
-                SpeciesKind = levelData[0, y, x];
-            }
-            */
-        }
-    }
-
 
     //블럭의 종류는 이 스크립트가 가지고있는게 맞지 않을까?
     //인스턴스의 이름으로도 충분히 어떤 종류의 조각인지 인식할 순 있다.
@@ -103,6 +74,18 @@ public class MapComponent : MonoBehaviour
         instance.GetComponent<Block>().y = y;
         instance.GetComponent<Block>().species = shapes;
         instance.transform.position = new Vector2(x, -y);
+
+        MatchData[y, x] = -1;
+        MapData[y, x] = instance;
+    }
+
+    public void CreateBlock(int shapes, int x, int y, Vector2 pos)
+    {
+        GameObject instance = Instantiate(Shapes[shapes], this.transform);
+        instance.GetComponent<Block>().x = x;
+        instance.GetComponent<Block>().y = y;
+        instance.GetComponent<Block>().species = shapes;
+        instance.transform.position = pos;
 
         MatchData[y, x] = -1;
         MapData[y, x] = instance;
