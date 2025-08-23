@@ -20,7 +20,6 @@ public class MouseManager : MonoBehaviour
             {
                 isCanClick = false;                                     //중복 클릭 방지
                 selectedBlocks = hit.collider.gameObject;
-                Debug.Log(mouseClickPos);
             }
         }
         if (Input.GetMouseButton(0) && selectedBlocks != null)

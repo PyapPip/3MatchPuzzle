@@ -77,7 +77,7 @@ public class MapManager : MonoBehaviour
         */
         //없다면 자릴 바꿨다 돌아오는 연출
 
-        mapComponent.DataReSet();
+        //mapComponent.DataReSet();
     }
 
     //
@@ -186,11 +186,13 @@ public class MapManager : MonoBehaviour
 
         for(int x = 0; x < mapComponent.blocksToSpawn.GetLength(0); x++)
         {
-            for (int y = mapComponent.blocksToSpawn[x]; y >= 0;  y++)
+            for (int y = 0; y < mapComponent.blocksToSpawn[x];  y++)
             {
-                Vector2 pos = new Vector2(x, y)
-                mapComponent.CreateBlock(s,x, y,)
+                Vector2 pos = new Vector2(x, y+1);
+                mapComponent.CreateBlock(s, x, y, pos);
 
+                //블럭 내려오기
+                //만약 매치된 블럭이 있다면 다시
             }
         }
     }
@@ -242,7 +244,10 @@ public class MapManager : MonoBehaviour
         Debug.Log("ㅋㅋ");
     }
 
-    
+    private void Awake()
+    {
+        Application.targetFrameRate = 60;
+    }
 
     void Start()
     {
