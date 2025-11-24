@@ -4,8 +4,8 @@ using System.Data;
 
 public class MapComponent : MonoBehaviour
 {
-    public GameObject[,] MapData;
-    public GameObject[] Shapes = new GameObject[5];
+    public GameObject[,] MapData;                   
+    public GameObject[] Shapes = new GameObject[5]; //5가지 종류의 블럭을 담아둔 배열
     /// <summary>
     /// -1 = 검사되지 않음, 0 = 검사됨, 1 = x축 매치, 2 = y축 매치, 3 = x,y 매치
     /// </summary> 

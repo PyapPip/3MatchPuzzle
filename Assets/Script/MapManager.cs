@@ -55,7 +55,7 @@ public class MapManager : MonoBehaviour
             return;
 
         (originalTile, changeTile) = (changeTile, originalTile);
-        MatchChack(virtualMap);
+        matchData = MatchChack(virtualMap);
 
         //터질 수 있다면 자릴 바꾼 후 터뜨리기
         if(matchData[y,x] >= 1 || matchData[changeTile.GetComponent<Block>().y, changeTile.GetComponent<Block>().x] >= 1)
@@ -81,9 +81,9 @@ public class MapManager : MonoBehaviour
     }
 
     //
-    void MatchChack(GameObject[,] arr)
+    int[,] MatchChack(GameObject[,] arr)
     {
-        int count = 0;
+        int count = 0;                                  //검사중 같은 블럭이 있다면 ++
         int prevShapes = -1;
         GameObject[,] mapData = mapComponent.MapData;
         int[,] matchData = mapComponent.MatchData;
@@ -91,87 +91,79 @@ public class MapManager : MonoBehaviour
         //x 확인
         for (int y = 0; y < arr.GetLength(0); y++)
         {
-            count = 0;
+            count = 0;  //새 행을 검사할때마다 초기화
 
             for (int x = 0; x < arr.GetLength(1); x++)
             {
-                Block tagetBlock = arr[y, x].GetComponent<Block>();
-                if (tagetBlock.species == prevShapes)
+                Block tagetBlock = arr[y, x].GetComponent<Block>(); //검사하는 좌표의 블럭의 정보를 받음
+                if (tagetBlock.species == prevShapes)               //해당 블럭의 모양과 이전 모양이 같다면
                 {
-                    count++;
-                    continue;
+                    count++;                                        //카운트
                 }
 
-                if (count >= 3)
+                else                                                //같지 않으면 카운트 초기화
+                {
+                    count = 0;
+                }
+
+                if (count >= 3)                                     //아닐때 카운트가 3 이상이라면
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        matchData[y, x - i] = 1;
+                        matchData[y, x - i] = 1;                    //해당하는 블럭 좌표에 x 매칭임을 표시
                     }
                 }
-                prevShapes = tagetBlock.species;
-            }
 
-            if (count >= 3)
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    matchData[y, arr.GetLength(1) - 1 - i] = 1;
-                }
+                prevShapes = tagetBlock.species;
             }
         }
 
         //y 확인
         for (int x = 0; x < mapData.GetLength(1); x++)
         {
+            count = 0;                                                  //새 열을 검사할때마다 초기화
+
             for (int y = 0; y < mapData.GetLength(0); y++)
             {
                 Block tagetBlock = mapData[y, x].GetComponent<Block>();
                 if (tagetBlock.species == prevShapes)
                 {
                     count++;
-                    if (matchData[y,x] == -1)
+
+                    
+                    if (matchData[y,x] == -1)                           //x,y축 검사가 끝난 블럭임을 표시
                     {
                         matchData[y,x] = 0;
                     }
                     continue;
                 }
 
-                if (count >= 3)
+                else
+                {
+                    count = 0;
+                }
+
+                if (count >= 3)                                         
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        if (matchData[y - i, x] == 1)
+                        if (matchData[y - i, x] == 1)                   //x 축 검사에서도 매치가 되었다면
                         {
-                            matchData[y - i, x] = 3;
+                            matchData[y - i, x] = 3;                    //x,y 둘 다 해당됨을 표시
                         }
                         else
                         {
-                            matchData[y - i, x] = 2;
+                            matchData[y - i, x] = 2;                    //y축 매치가 된 블럭임을 표시
                         }
                     }
                 }
                 prevShapes = tagetBlock.species;
             }
-
-            if (count >= 3)
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    if (matchData[arr.GetLength(0) - 1 - i, x] == 1)
-                    {
-                        matchData[arr.GetLength(0) - 1 - i, x] = 3;
-                    }
-                    else
-                    {
-                        matchData[arr.GetLength(0) - 1 - i, x] = 2;
-                    }
-                }
-            }
         }
 
-        return;
+        return matchData;
     }
+    
 
     //생성하는 x좌표에 맞춰 여러개를 위에 쌓는식으로 생성해주면 끝 아님?
     //파괴하면서 y좌표의 이동이 일어날부분을 미리 바꿔야하지 않을까?
@@ -191,6 +183,7 @@ public class MapManager : MonoBehaviour
                 Vector2 pos = new Vector2(x, y+1);
                 mapComponent.CreateBlock(s, x, y, pos);
 
+
                 //블럭 내려오기
                 //만약 매치된 블럭이 있다면 다시
             }
@@ -198,10 +191,11 @@ public class MapManager : MonoBehaviour
     }
 
     //블럭 위치를 교환하였을때 3매치가 가능한지 확인하는 함수
+    //MatchData에 실제로 영향을 주잖아 씻ㅅ팔
     void CanMakeMatch()
     {
-        GameObject[,] map = mapComponent.MapData;
-        int[,] mapData = mapComponent.MatchData;
+        GameObject[,] map = mapComponent.MapData;   
+        int[,] mapData = new int[0,0];              //매치 확인을 위한 임시 변수
 
         for (int y = 0; y < map.GetLength(0); y++)
         {
@@ -213,34 +207,43 @@ public class MapManager : MonoBehaviour
                 {
                     virtualMap = map;
                     (virtualMap[y, x], virtualMap[y, x - 1]) = (virtualMap[y, x - 1], virtualMap[y, x]);
-                    MatchChack(virtualMap);
+                    mapData = MatchChack(virtualMap);
                 }
 
                 if(x < map.GetLength(1))
                 {
                     virtualMap = map;
                     (virtualMap[y, x], virtualMap[y, x + 1]) = (virtualMap[y, x + 1], virtualMap[y, x]);
-                    MatchChack(virtualMap);
+                    mapData = MatchChack(virtualMap);
                 }
 
                 if (y > 0)
                 {
                     virtualMap = map;
                     (virtualMap[y, x], virtualMap[y - 1, x]) = (virtualMap[y - 1, x], virtualMap[y, x]);
-                    MatchChack(virtualMap);
+                    mapData = MatchChack(virtualMap);
                 }
 
                 if (y < map.GetLength(0))
                 {
                     virtualMap = map;
                     (virtualMap[y, x], virtualMap[y + 1, x]) = (virtualMap[y + 1, x], virtualMap[y, x]);
-                    MatchChack(virtualMap);
+                    mapData = MatchChack(virtualMap);
                 }
             }
         }
 
-        //터뜨릴 수 없다면 재배치
-        //터뜨릴 수 없는지 확인하는 코드 필요
+        if(mapData.GetLength(0) == 0 || mapData.GetLength(1) == 0)
+        {
+            //터뜨릴 수 있으면 리턴
+            return;
+        }
+
+        else
+        {
+            //가능한게 없으면 재배치
+        }
+
         Debug.Log("ㅋㅋ");
     }
 

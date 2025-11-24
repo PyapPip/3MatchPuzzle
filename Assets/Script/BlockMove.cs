@@ -1,13 +1,13 @@
-ï»¿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
-public class temp : MonoBehaviour
+public class BlockMove : MonoBehaviour
 {
-    private float cellSize = 1f;      // ê²©ì í•œ ì¹¸ í¬ê¸°
-    private int moveFrame = 12;       // ì´ë™í•˜ëŠ” ë° ê±¸ë¦¬ëŠ” í”„ë ˆì„
-    private int gridX = 0;           // ê²©ì X ì¢Œí‘œ
-    private int gridY = 0;           // ê²©ì Y ì¢Œí‘œ
-    private bool isMoving = false;   // ì´ë™ ì¤‘ ì—¬ë¶€ ì²´í¬
+    private float cellSize = 1f;      // °İÀÚ ÇÑ Ä­ Å©±â
+    private int moveFrame = 12;       // ÀÌµ¿ÇÏ´Â µ¥ °É¸®´Â ÇÁ·¹ÀÓ
+    private int gridX = 0;           // °İÀÚ X ÁÂÇ¥
+    private int gridY = 0;           // °İÀÚ Y ÁÂÇ¥
+    private bool isMoving = false;   // ÀÌµ¿ Áß ¿©ºÎ Ã¼Å©
 
     private void Start()
     {
@@ -17,7 +17,7 @@ public class temp : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isMoving) return; //ì´ë™ ì¤‘ì´ë©´ ì…ë ¥ ë¬´ì‹œ
+        if (isMoving) return; //ÀÌµ¿ ÁßÀÌ¸é ÀÔ·Â ¹«½Ã
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
@@ -45,7 +45,7 @@ public class temp : MonoBehaviour
 
     void UpdatePosition()
     {
-        // ê²©ì ì¢Œí‘œ â†’ ì‹¤ì œ ì›”ë“œ ì¢Œí‘œë¡œ ë³€í™˜
+        // °İÀÚ ÁÂÇ¥ ¡æ ½ÇÁ¦ ¿ùµå ÁÂÇ¥·Î º¯È¯
         transform.position = new Vector3(gridX * cellSize, gridY * cellSize, 0);
     }
 
@@ -61,12 +61,12 @@ public class temp : MonoBehaviour
         while (nowFrame < moveFrame)
         {
             transform.position = Vector3.Lerp(startPos, targetPos, 1.0f / moveFrame * nowFrame);
-            
+
             nowFrame++;
             yield return new WaitForEndOfFrame();
         }
 
-        // ë§ˆì§€ë§‰ ìœ„ì¹˜ ë³´ì •
+        // ¸¶Áö¸· À§Ä¡ º¸Á¤
         transform.position = targetPos;
 
         isMoving = false;
