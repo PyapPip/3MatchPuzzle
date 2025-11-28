@@ -5,12 +5,20 @@ public class MouseManager : MonoBehaviour
 {
     public GameObject Map;
     public bool isCanClick = true;
+    public GameObject selectedBlocks;
 
-    private GameObject selectedBlocks;
     private Vector2 mouseClickPos;
 
     void Update()
     {
+        if (Input.GetMouseButtonUp(0))
+        {
+            isCanClick = true;
+        }
+
+        if (!isCanClick)
+            return;
+
         if (Input.GetMouseButtonDown(0) && isCanClick)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -19,37 +27,57 @@ public class MouseManager : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 isCanClick = false;                                     //중복 클릭 방지
-                selectedBlocks = hit.collider.gameObject;
-            }
-        }
-        if (Input.GetMouseButton(0) && selectedBlocks != null)
-        {
-            mouseClickPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
-            MapManager m = Map.GetComponent<MapManager>();
-            if (mouseClickPos.x - selectedBlocks.transform.position.x < -1)
-            {
-                m.ChangeBlock(selectedBlocks, 1);
-            }
 
-            else if (mouseClickPos.x - selectedBlocks.transform.position.x > 1)
-            {
-                m.ChangeBlock(selectedBlocks, 2);
-            }
+                if(selectedBlocks == null)
+                {
+                    selectedBlocks = hit.collider.gameObject;
+                }
 
-            else if (mouseClickPos.y - selectedBlocks.transform.position.y < -1)
-            {
-                m.ChangeBlock(selectedBlocks, 3);
-            }
+                else
+                {
+                    //mouseClickPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
+                    
+                    MapManager m = Map.GetComponent<MapManager>();
 
-            else if (mouseClickPos.y - selectedBlocks.transform.position.y > 1)
-            {
-                m.ChangeBlock(selectedBlocks, 4);
-            }
-        }
+                    if(selectedBlocks.GetComponent<Block>().x -1 == hit.collider.gameObject.GetComponent<Block>().x)
+                    {
+                        m.ChangeBlock(selectedBlocks, 1);
+                        selectedBlocks = null;
+                        Debug.Log("왼");
+                    }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            isCanClick = true;
+                    else if (selectedBlocks.GetComponent<Block>().x + 1 == hit.collider.gameObject.GetComponent<Block>().x)
+                    {
+                        m.ChangeBlock(selectedBlocks, 2);
+                        selectedBlocks = null;
+                        Debug.Log("오");
+                    }
+
+                    else if (selectedBlocks.GetComponent<Block>().y + 1 == hit.collider.gameObject.GetComponent<Block>().y)
+                    {
+                        m.ChangeBlock(selectedBlocks, 3);
+                        selectedBlocks = null;
+                        Debug.Log("아래");
+                    }
+
+                    else if (selectedBlocks.GetComponent<Block>().y - 1 == hit.collider.gameObject.GetComponent<Block>().y)
+                    {
+                        m.ChangeBlock(selectedBlocks, 4);
+                        selectedBlocks = null;
+                        Debug.Log("위");
+                    }
+
+                    //선택 취소
+                    else
+                    {
+                        selectedBlocks = null;
+                        Debug.Log("취소");
+                    }
+                }
+            }
         }
     }
 }
+
+//같은 블럭 클릭시 취소되도록
+//마우스 클릭위치로 파악하는것이 아닌 클릭한 블럭 위치를 기준으로 비교할 수 있도록 수정 필요

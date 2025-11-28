@@ -78,7 +78,8 @@ public class MapComponent : MonoBehaviour
         MatchData[y, x] = -1;
         MapData[y, x] = instance;
     }
-
+    
+    //좌표 지정을 위해 오버라이딩한 함수
     public void CreateBlock(int shapes, int x, int y, Vector2 pos)
     {
         GameObject instance = Instantiate(Shapes[shapes], this.transform);

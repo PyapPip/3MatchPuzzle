@@ -26,27 +26,27 @@ public class MapManager : MonoBehaviour
         switch (dir)
         {
             case 1:
-                if (block.GetComponent<Block>().x >= 1)
+                if (block.GetComponent<Block>().x >= 0)
                 {
-                    changeTile = virtualMap[y, x - 1];
+                    changeTile = virtualMap[y, x];
                 }
                 break;
             case 2:
                 if (block.GetComponent<Block>().x < mapData.GetLength(0))
                 {
-                    changeTile = virtualMap[y, x + 1];
+                    changeTile = virtualMap[y, x];
                 }
                 break;
             case 3:
                 if (block.GetComponent<Block>().y < mapData.GetLength(1))
                 {
-                    changeTile = virtualMap[y - 1, x];
+                    changeTile = virtualMap[y, x];
                 }
                 break;
             case 4:
-                if (block.GetComponent<Block>().y >= 1)
+                if (block.GetComponent<Block>().y >= 0)
                 {
-                    changeTile = virtualMap[y, x + 1];
+                    changeTile = virtualMap[y, x];
                 }
                 break;
         }
@@ -72,14 +72,16 @@ public class MapManager : MonoBehaviour
                 }
             }
         }
-        /*
-        
-        */
+
         //없다면 자릴 바꿨다 돌아오는 연출
+        else
+        {
+
+        }
 
         //mapComponent.DataReSet();
     }
-
+        
     //
     int[,] MatchChack(GameObject[,] arr)
     {
