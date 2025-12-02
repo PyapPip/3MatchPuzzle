@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEditor;
 using UnityEngine;
 
 public class MapManager : MonoBehaviour
@@ -60,13 +61,18 @@ public class MapManager : MonoBehaviour
         //터질 수 있다면 자릴 바꾼 후 터뜨리기
         if(matchData[y,x] >= 1 || matchData[changeTile.GetComponent<Block>().y, changeTile.GetComponent<Block>().x] >= 1)
         {
+            block.gameObject.GetComponent<BlockMove>().MoveStart(true, dir);
+
+            //폭발 처리는 함수화 필요 + 블럭의 이동이 끝난 후 처리해야함.
+            //여기서부터 해야함
             for (int i = 0; i < mapData.GetLength(0); i++)
             {
                 for (int j = 0; j < mapData.GetLength(1); j++)
                 {
                     if (matchData[i, j] > 0)
                     {
-                        //폭발! 
+                        
+                        
                         return;
                     }
                 }
@@ -76,7 +82,7 @@ public class MapManager : MonoBehaviour
         //없다면 자릴 바꿨다 돌아오는 연출
         else
         {
-
+            block.gameObject.GetComponent<BlockMove>().MoveStart(false, dir);
         }
 
         //mapComponent.DataReSet();

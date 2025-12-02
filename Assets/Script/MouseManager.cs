@@ -35,8 +35,6 @@ public class MouseManager : MonoBehaviour
 
                 else
                 {
-                    //mouseClickPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
-                    
                     MapManager m = Map.GetComponent<MapManager>();
 
                     if(selectedBlocks.GetComponent<Block>().x -1 == hit.collider.gameObject.GetComponent<Block>().x)
