@@ -58,7 +58,7 @@ public class MapManager : MonoBehaviour
         (originalTile, changeTile) = (changeTile, originalTile);
         matchData = MatchChack(virtualMap);
 
-        //터질 수 있다면 자릴 바꾼 후 터뜨리기
+        //자리를 바꾸었을때 매치된다면
         if(matchData[y,x] >= 1 || matchData[changeTile.GetComponent<Block>().y, changeTile.GetComponent<Block>().x] >= 1)
         {
             block.gameObject.GetComponent<BlockMove>().MoveStart(true, dir);
@@ -199,7 +199,6 @@ public class MapManager : MonoBehaviour
     }
 
     //블럭 위치를 교환하였을때 3매치가 가능한지 확인하는 함수
-    //MatchData에 실제로 영향을 주잖아 씻ㅅ팔
     void CanMakeMatch()
     {
         GameObject[,] map = mapComponent.MapData;   

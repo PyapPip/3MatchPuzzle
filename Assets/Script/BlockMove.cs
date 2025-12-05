@@ -23,7 +23,7 @@ public class BlockMove : MonoBehaviour
         targetLocation = new int[2] { this.gameObject.GetComponent<Block>().x, this.gameObject.GetComponent<Block>().y };
         if (isMatch == 1)
         {
-            StartCoroutine(MoveBlock());
+            MoveBlock();
         }
         else
         {
@@ -46,7 +46,7 @@ public class BlockMove : MonoBehaviour
         transform.position = new Vector3(targetLocation[0], targetLocation[1], 0);
     }
 
-    IEnumerator MoveBlock()
+    void MoveBlock()
     {
         float nowFrame = 0.0f;
 
@@ -58,13 +58,12 @@ public class BlockMove : MonoBehaviour
             transform.position = Vector3.Lerp(startPos, targetPos, 1.0f / moveFrame * nowFrame);
 
             nowFrame++;
-            yield return new WaitForEndOfFrame();
         }
 
         // 마지막 위치 보정
         UpdatePosition();
-        
-        yield break;
+
+        isMatch = -1;
     }
 
     IEnumerator Snapback()
