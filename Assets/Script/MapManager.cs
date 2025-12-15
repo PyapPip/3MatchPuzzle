@@ -27,25 +27,25 @@ public class MapManager : MonoBehaviour
         switch (dir)
         {
             case 1:
-                if (block.GetComponent<Block>().x >= 0)
+                if (block.GetComponent<Block>().x > 0)
                 {
                     changeTile = virtualMap[y, x];
                 }
                 break;
             case 2:
-                if (block.GetComponent<Block>().x < mapData.GetLength(0))
+                if (block.GetComponent<Block>().x < mapData.GetLength(1))
                 {
                     changeTile = virtualMap[y, x];
                 }
                 break;
             case 3:
-                if (block.GetComponent<Block>().y < mapData.GetLength(1))
+                if (block.GetComponent<Block>().y > 0)
                 {
                     changeTile = virtualMap[y, x];
                 }
                 break;
             case 4:
-                if (block.GetComponent<Block>().y >= 0)
+                if (block.GetComponent<Block>().y < mapData.GetLength(0))
                 {
                     changeTile = virtualMap[y, x];
                 }
@@ -64,7 +64,6 @@ public class MapManager : MonoBehaviour
             block.gameObject.GetComponent<BlockMove>().MoveStart(true, dir);
 
             //폭발 처리는 함수화 필요 + 블럭의 이동이 끝난 후 처리해야함.
-            //여기서부터 해야함
             for (int i = 0; i < mapData.GetLength(0); i++)
             {
                 for (int j = 0; j < mapData.GetLength(1); j++)

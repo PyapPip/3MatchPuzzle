@@ -27,7 +27,7 @@ public class BlockMove : MonoBehaviour
         }
         else
         {
-            StartCoroutine(Snapback());
+            Snapback();
         }
     }
 
@@ -66,17 +66,15 @@ public class BlockMove : MonoBehaviour
         isMatch = -1;
     }
 
-    IEnumerator Snapback()
+    void Snapback()
     {
         float nowFrame = 0.0f;
 
         Vector3 startPos = transform.position;
-        Vector3 targetPos = new Vector3(this.GetComponent<Block>().x, this.GetComponent<Block>().y, 0);
+        Vector3 targetPos = new Vector3(targetLocation[0], targetLocation[1], 0);
 
         while (nowFrame < moveFrame)
         {
-            Debug.Log(nowFrame);
-
             if (nowFrame * 2 <= moveFrame)
             {
                 transform.position = Vector3.Lerp(startPos, targetPos, 2.0f / moveFrame * nowFrame);
@@ -87,10 +85,10 @@ public class BlockMove : MonoBehaviour
             }
 
             nowFrame++;
-            yield return new WaitForEndOfFrame();
+            return;
         }
 
         transform.position = startPos;
-        yield break;
+        isMatch = -1;
     }
 }
