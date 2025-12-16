@@ -9,59 +9,59 @@ public class MapManager : MonoBehaviour
 
     MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
 
-    public void ChangeBlock(GameObject block, int dir)
+    public void ChangeBlock(GameObject _block, int _dir)
     {
         GameObject[,] mapData = mapComponent.MapData;
         int[,] matchData = mapComponent.MatchData;
-        GameObject[,] virtualMap;
-
-        int x = block.GetComponent<Block>().x;
-        int y = block.GetComponent<Block>().y;
+        GameObject[,] virtualMap;                       //비교를 위한 맵 데이터의 복제
 
         virtualMap = mapData;
-        GameObject originalTile = virtualMap[y, x];
-        GameObject changeTile = null;
+        GameObject originalBlock = _block;
+        GameObject changeBlock = null;
 
-        //dir 1.left 2.right 3.down 4.up
+        int x = originalBlock.GetComponent<Block>().x;
+        int y = originalBlock.GetComponent<Block>().y;
+
+        //dir 1.left 2.right 3.up 4.dawn
         //바꾸러는 방향이 유효한지 확인
-        switch (dir)
+        switch (_dir)
         {
             case 1:
-                if (block.GetComponent<Block>().x > 0)
+                if (_block.GetComponent<Block>().x > 0)
                 {
-                    changeTile = virtualMap[y, x];
+                    changeBlock = virtualMap[y, x - 1];
                 }
                 break;
             case 2:
-                if (block.GetComponent<Block>().x < mapData.GetLength(1))
+                if (_block.GetComponent<Block>().x < mapData.GetLength(1))
                 {
-                    changeTile = virtualMap[y, x];
+                    changeBlock = virtualMap[y, x + 1];
                 }
                 break;
             case 3:
-                if (block.GetComponent<Block>().y > 0)
+                if (_block.GetComponent<Block>().y > 0)
                 {
-                    changeTile = virtualMap[y, x];
+                    changeBlock = virtualMap[y - 1, x];
                 }
                 break;
             case 4:
-                if (block.GetComponent<Block>().y < mapData.GetLength(0))
+                if (_block.GetComponent<Block>().y < mapData.GetLength(0))
                 {
-                    changeTile = virtualMap[y, x];
+                    changeBlock = virtualMap[y + 1, x];
                 }
                 break;
         }
 
-        if (changeTile == null)
+        if (changeBlock == null)
             return;
 
-        (originalTile, changeTile) = (changeTile, originalTile);
+        (originalBlock, changeBlock) = (changeBlock, originalBlock);
         matchData = MatchChack(virtualMap);
 
         //자리를 바꾸었을때 매치된다면
-        if(matchData[y,x] >= 1 || matchData[changeTile.GetComponent<Block>().y, changeTile.GetComponent<Block>().x] >= 1)
+        if(matchData[y,x] >= 1 || matchData[changeBlock.GetComponent<Block>().y, changeBlock.GetComponent<Block>().x] >= 1)
         {
-            block.gameObject.GetComponent<BlockMove>().MoveStart(true, dir);
+            _block.gameObject.GetComponent<BlockMove>().MoveStart(true, _dir);
 
             //폭발 처리는 함수화 필요 + 블럭의 이동이 끝난 후 처리해야함.
             for (int i = 0; i < mapData.GetLength(0); i++)
@@ -70,8 +70,8 @@ public class MapManager : MonoBehaviour
                 {
                     if (matchData[i, j] > 0)
                     {
-                        
-                        
+
+                        Debug.Log("맞음");
                         return;
                     }
                 }
@@ -81,14 +81,15 @@ public class MapManager : MonoBehaviour
         //없다면 자릴 바꿨다 돌아오는 연출
         else
         {
-            block.gameObject.GetComponent<BlockMove>().MoveStart(false, dir);
+            originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, _dir);
+            //changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, _dir);
         }
 
         //mapComponent.DataReSet();
     }
         
     //
-    int[,] MatchChack(GameObject[,] arr)
+    int[,] MatchChack(GameObject[,] _virtualMap)
     {
         int count = 0;                                  //검사중 같은 블럭이 있다면 ++
         int prevShapes = -1;
@@ -96,13 +97,13 @@ public class MapManager : MonoBehaviour
         int[,] matchData = mapComponent.MatchData;
 
         //x 확인
-        for (int y = 0; y < arr.GetLength(0); y++)
+        for (int y = 0; y < _virtualMap.GetLength(0); y++)
         {
             count = 0;  //새 행을 검사할때마다 초기화
 
-            for (int x = 0; x < arr.GetLength(1); x++)
+            for (int x = 0; x < _virtualMap.GetLength(1); x++)
             {
-                Block tagetBlock = arr[y, x].GetComponent<Block>(); //검사하는 좌표의 블럭의 정보를 받음
+                Block tagetBlock = _virtualMap[y, x].GetComponent<Block>(); //검사하는 좌표의 블럭의 정보를 받음
                 if (tagetBlock.species == prevShapes)               //해당 블럭의 모양과 이전 모양이 같다면
                 {
                     count++;                                        //카운트

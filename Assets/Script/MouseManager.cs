@@ -28,7 +28,7 @@ public class MouseManager : MonoBehaviour
             {
                 isCanClick = false;                                     //중복 클릭 방지
 
-                if(selectedBlocks == null)
+                if (selectedBlocks == null)
                 {
                     selectedBlocks = hit.collider.gameObject;
                 }
@@ -37,32 +37,32 @@ public class MouseManager : MonoBehaviour
                 {
                     MapManager m = Map.GetComponent<MapManager>();
 
-                    if(selectedBlocks.GetComponent<Block>().x -1 == hit.collider.gameObject.GetComponent<Block>().x)
+                    if (selectedBlocks.GetComponent<Block>().x - 1 == hit.collider.gameObject.GetComponent<Block>().x)
                     {
+                        Debug.Log("왼");
                         m.ChangeBlock(selectedBlocks, 1);
                         selectedBlocks = null;
-                        Debug.Log("왼");
                     }
 
                     else if (selectedBlocks.GetComponent<Block>().x + 1 == hit.collider.gameObject.GetComponent<Block>().x)
                     {
+                        Debug.Log("오");
                         m.ChangeBlock(selectedBlocks, 2);
                         selectedBlocks = null;
-                        Debug.Log("오");
-                    }
-
-                    else if (selectedBlocks.GetComponent<Block>().y + 1 == hit.collider.gameObject.GetComponent<Block>().y)
-                    {
-                        m.ChangeBlock(selectedBlocks, 3);
-                        selectedBlocks = null;
-                        Debug.Log("아래");
                     }
 
                     else if (selectedBlocks.GetComponent<Block>().y - 1 == hit.collider.gameObject.GetComponent<Block>().y)
                     {
+                        Debug.Log("위");
+                        m.ChangeBlock(selectedBlocks, 3);
+                        selectedBlocks = null;
+                    }
+
+                    else if (selectedBlocks.GetComponent<Block>().y + 1 == hit.collider.gameObject.GetComponent<Block>().y)
+                    {
+                        Debug.Log("아래");
                         m.ChangeBlock(selectedBlocks, 4);
                         selectedBlocks = null;
-                        Debug.Log("위");
                     }
 
                     //선택 취소
