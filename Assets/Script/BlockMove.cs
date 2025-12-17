@@ -4,36 +4,35 @@ using UnityEngine;
 public class BlockMove : MonoBehaviour
 {
     private int moveFrame = 24;                 // 이동하는 데 걸리는 프레임
-    private bool isMovingStart = false;         // true = 이동 시작
+    private float nowFrame = 0.0f;              // 현재 프레임
     private int[] targetLocation;
+    private Vector3 startPos;
+    private Vector3 targetPos;
 
-    public int isMatch = -1;                    // -1 = 미확인 0 = 매치 안 됨 1 = 매치 됨
-
-    void Start()
-    {
-        UpdatePosition();
-    }
+    public int isMatch = -1;                    // -1 = 초기화 0 = 매치 안 됨 1 = 매치 됨
 
     // Update is called once per frame
     void Update()
     {
-        if (!isMovingStart) 
+        if (isMatch == -1) 
             return;
 
         targetLocation = new int[2] { this.gameObject.GetComponent<Block>().x, this.gameObject.GetComponent<Block>().y };
-        if (isMatch == 1)
+        while (isMatch > -1)
         {
-            MoveBlock();
-        }
-        else
-        {
-            Snapback();
+            if (isMatch == 1)
+            {
+                MoveBlock();
+            }
+            else
+            {
+                Snapback();
+            }
         }
     }
 
     public void MoveStart(bool _matchResult, int _dir)
     {
-        isMovingStart = true;
         if (_matchResult)
             isMatch = 1;
         else
@@ -48,10 +47,7 @@ public class BlockMove : MonoBehaviour
 
     void MoveBlock()
     {
-        float nowFrame = 0.0f;
-
-        Vector3 startPos = transform.position;
-        Vector3 targetPos = new Vector3(targetLocation[0], targetLocation[1], 0);
+        targetPos = new Vector3(targetLocation[0], targetLocation[1], 0);
 
         while (nowFrame < moveFrame)
         {
@@ -64,12 +60,12 @@ public class BlockMove : MonoBehaviour
         UpdatePosition();
 
         isMatch = -1;
+        nowFrame = 0.0f;
+        return;
     }
 
     void Snapback()
     {
-        float nowFrame = 0.0f;
-
         Vector3 startPos = transform.position;
         Vector3 targetPos = new Vector3(targetLocation[0], targetLocation[1], 0);
 
@@ -90,5 +86,7 @@ public class BlockMove : MonoBehaviour
 
         transform.position = startPos;
         isMatch = -1;
+        nowFrame= 0.0f;
+        return;
     }
 }

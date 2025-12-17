@@ -81,8 +81,10 @@ public class MapManager : MonoBehaviour
         //없다면 자릴 바꿨다 돌아오는 연출
         else
         {
+            //움직이는 방향의 블럭을 반대방향으로 움직이도록
+            int changeDir = _dir < 3 ? (_dir == 1 ? 2 : 1) : (_dir == 3 ? 4 : 3);
             originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, _dir);
-            //changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, _dir);
+            changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, changeDir);
         }
 
         //mapComponent.DataReSet();
