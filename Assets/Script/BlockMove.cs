@@ -5,7 +5,6 @@ public class BlockMove : MonoBehaviour
 {
     private int moveFrame = 24;                 // 이동하는 데 걸리는 프레임
     private float nowFrame = 0.0f;              // 현재 프레임
-    private int[] targetLocation;
     private Vector3 startPos;
     private Vector3 targetPos;
 
@@ -17,8 +16,7 @@ public class BlockMove : MonoBehaviour
         if (isMatch == -1) 
             return;
 
-        targetLocation = new int[2] { this.gameObject.GetComponent<Block>().x, this.gameObject.GetComponent<Block>().y };
-        while (isMatch > -1)
+        if (isMatch > -1)
         {
             if (isMatch == 1)
             {
@@ -31,33 +29,31 @@ public class BlockMove : MonoBehaviour
         }
     }
 
-    public void MoveStart(bool _matchResult, int _dir)
+    public void MoveStart(bool _matchResult, int[] _targetPos)
     {
         if (_matchResult)
             isMatch = 1;
         else
             isMatch = 0;
-    }
 
-    private void UpdatePosition()
-    {
-        // 격자 좌표 → 실제 월드 좌표로 변환
-        transform.position = new Vector3(targetLocation[0], targetLocation[1], 0);
+        startPos = transform.position;
+        targetPos = new Vector3(_targetPos[0], targetPos[1]);
+
+        Debug.Log(startPos);
+        Debug.Log(targetPos);
     }
 
     void MoveBlock()
     {
-        targetPos = new Vector3(targetLocation[0], targetLocation[1], 0);
-
         while (nowFrame < moveFrame)
         {
-            transform.position = Vector3.Lerp(startPos, targetPos, 1.0f / moveFrame * nowFrame);
+            transform.localPosition = Vector3.Lerp(startPos, targetPos, 1.0f / moveFrame * nowFrame);
 
             nowFrame++;
         }
 
         // 마지막 위치 보정
-        UpdatePosition();
+        transform.localPosition = targetPos;
 
         isMatch = -1;
         nowFrame = 0.0f;
@@ -66,10 +62,7 @@ public class BlockMove : MonoBehaviour
 
     void Snapback()
     {
-        Vector3 startPos = transform.position;
-        Vector3 targetPos = new Vector3(targetLocation[0], targetLocation[1], 0);
-
-        while (nowFrame < moveFrame)
+        if (nowFrame < moveFrame)
         {
             if (nowFrame * 2 <= moveFrame)
             {

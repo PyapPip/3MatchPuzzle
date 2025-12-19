@@ -13,14 +13,14 @@ public class MapManager : MonoBehaviour
     {
         GameObject[,] mapData = mapComponent.MapData;
         int[,] matchData = mapComponent.MatchData;
-        GameObject[,] virtualMap;                       //비교를 위한 맵 데이터의 복제
-
-        virtualMap = mapData;
+        GameObject[,] virtualMap = mapData;                       //비교를 위한 맵 데이터의 복제
         GameObject originalBlock = _block;
         GameObject changeBlock = null;
 
         int x = originalBlock.GetComponent<Block>().x;
         int y = originalBlock.GetComponent<Block>().y;
+        int[] nowPos = new int[2] { x, y };
+        int[] targetPos = new int[2];
 
         //dir 1.left 2.right 3.up 4.dawn
         //바꾸러는 방향이 유효한지 확인
@@ -30,24 +30,28 @@ public class MapManager : MonoBehaviour
                 if (_block.GetComponent<Block>().x > 0)
                 {
                     changeBlock = virtualMap[y, x - 1];
+                    targetPos = new int[2] { x - 1, y };
                 }
                 break;
             case 2:
                 if (_block.GetComponent<Block>().x < mapData.GetLength(1))
                 {
                     changeBlock = virtualMap[y, x + 1];
+                    targetPos = new int[2] { x + 1, y };
                 }
                 break;
             case 3:
                 if (_block.GetComponent<Block>().y > 0)
                 {
                     changeBlock = virtualMap[y - 1, x];
+                    targetPos = new int[2] { x, y - 1 };
                 }
                 break;
             case 4:
                 if (_block.GetComponent<Block>().y < mapData.GetLength(0))
                 {
                     changeBlock = virtualMap[y + 1, x];
+                    targetPos = new int[2] { x, y + 1 };
                 }
                 break;
         }
@@ -61,7 +65,7 @@ public class MapManager : MonoBehaviour
         //자리를 바꾸었을때 매치된다면
         if(matchData[y,x] >= 1 || matchData[changeBlock.GetComponent<Block>().y, changeBlock.GetComponent<Block>().x] >= 1)
         {
-            _block.gameObject.GetComponent<BlockMove>().MoveStart(true, _dir);
+            _block.gameObject.GetComponent<BlockMove>().MoveStart(true, targetPos);
 
             //폭발 처리는 함수화 필요 + 블럭의 이동이 끝난 후 처리해야함.
             for (int i = 0; i < mapData.GetLength(0); i++)
@@ -81,10 +85,8 @@ public class MapManager : MonoBehaviour
         //없다면 자릴 바꿨다 돌아오는 연출
         else
         {
-            //움직이는 방향의 블럭을 반대방향으로 움직이도록
-            int changeDir = _dir < 3 ? (_dir == 1 ? 2 : 1) : (_dir == 3 ? 4 : 3);
-            originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, _dir);
-            changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, changeDir);
+            originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, targetPos);
+            changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, nowPos);
         }
 
         //mapComponent.DataReSet();
@@ -190,7 +192,7 @@ public class MapManager : MonoBehaviour
         {
             for (int y = 0; y < mapComponent.blocksToSpawn[x];  y++)
             {
-                Vector2 pos = new Vector2(x, y+1);
+                Vector2 pos = new Vector2(x, y + 1);
                 mapComponent.CreateBlock(s, x, y, pos);
 
 

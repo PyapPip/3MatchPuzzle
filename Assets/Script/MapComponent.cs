@@ -4,6 +4,7 @@ using System.Data;
 
 public class MapComponent : MonoBehaviour
 {
+    public GameObject Camera;
     public GameObject[,] MapData;                   
     public GameObject[] Shapes = new GameObject[5]; //5가지 종류의 블럭을 담아둔 배열
     /// <summary>
@@ -34,7 +35,7 @@ public class MapComponent : MonoBehaviour
             }
         }
 
-        this.gameObject.transform.position = new Vector3(-levelData.GetLength(2) / 2, levelData.GetLength(1) / 2, 0);
+        Camera.transform.position = new Vector3(levelData.GetLength(2) / 2, -levelData.GetLength(1) / 2, -1);
     }
 
     public void DataReSet()
