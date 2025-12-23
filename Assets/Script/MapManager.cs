@@ -56,6 +56,10 @@ public class MapManager : MonoBehaviour
                 break;
         }
 
+
+        Debug.Log("now x: " + nowPos[0] + " y: " + nowPos[1]);
+        Debug.Log("target x: " + targetPos[0] + " y: " + targetPos[1]);
+
         if (changeBlock == null)
             return;
 
@@ -85,6 +89,7 @@ public class MapManager : MonoBehaviour
         //없다면 자릴 바꿨다 돌아오는 연출
         else
         {
+            (originalBlock, changeBlock) = (changeBlock, originalBlock);
             originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, targetPos);
             changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, nowPos);
         }

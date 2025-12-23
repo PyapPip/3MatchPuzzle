@@ -37,10 +37,7 @@ public class BlockMove : MonoBehaviour
             isMatch = 0;
 
         startPos = transform.position;
-        targetPos = new Vector3(_targetPos[0], targetPos[1]);
-
-        Debug.Log(startPos);
-        Debug.Log(targetPos);
+        targetPos = new Vector3(_targetPos[0], -_targetPos[1]);
     }
 
     void MoveBlock()
