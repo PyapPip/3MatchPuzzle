@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BlockMove : MonoBehaviour
 {
-    private int moveFrame = 24;                 // 이동하는 데 걸리는 프레임
+    private int moveFrame = 0;                 // 이동하는 데 걸리는 프레임
     private float nowFrame = 0.0f;              // 현재 프레임
     private Vector3 startPos;
     private Vector3 targetPos;
@@ -32,9 +32,9 @@ public class BlockMove : MonoBehaviour
     public void MoveStart(bool _matchResult, int[] _targetPos)
     {
         if (_matchResult)
-            isMatch = 1;
+        { isMatch = 1; moveFrame = 16; }
         else
-            isMatch = 0;
+        { isMatch = 0; moveFrame = 24; }
 
         startPos = transform.position;
         targetPos = new Vector3(_targetPos[0], -_targetPos[1]);
@@ -42,16 +42,15 @@ public class BlockMove : MonoBehaviour
 
     void MoveBlock()
     {
-        while (nowFrame < moveFrame)
+        if (nowFrame < moveFrame)
         {
-            transform.localPosition = Vector3.Lerp(startPos, targetPos, 1.0f / moveFrame * nowFrame);
-
+            transform.position = Vector3.Lerp(startPos, targetPos, 1.0f / moveFrame * nowFrame);
             nowFrame++;
+            return;
         }
 
         // 마지막 위치 보정
         transform.localPosition = targetPos;
-
         isMatch = -1;
         nowFrame = 0.0f;
         return;

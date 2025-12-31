@@ -62,14 +62,17 @@ public class MapManager : MonoBehaviour
 
         if (changeBlock == null)
             return;
-
+        
+        virtualMap[y, x] = changeBlock;
+        virtualMap[targetPos[1], targetPos[0]] = originalBlock; 
         (originalBlock, changeBlock) = (changeBlock, originalBlock);
         matchData = MatchChack(virtualMap);
 
         //자리를 바꾸었을때 매치된다면
-        if(matchData[y,x] >= 1 || matchData[changeBlock.GetComponent<Block>().y, changeBlock.GetComponent<Block>().x] >= 1)
+        if(matchData[y,x] >= 1 || matchData[targetPos[1], targetPos[0]] >= 1)
         {
-            _block.gameObject.GetComponent<BlockMove>().MoveStart(true, targetPos);
+            originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(true, nowPos);
+            changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(true, targetPos);
 
             //폭발 처리는 함수화 필요 + 블럭의 이동이 끝난 후 처리해야함.
             for (int i = 0; i < mapData.GetLength(0); i++)
@@ -116,6 +119,7 @@ public class MapManager : MonoBehaviour
                 if (tagetBlock.species == prevShapes)               //해당 블럭의 모양과 이전 모양이 같다면
                 {
                     count++;                                        //카운트
+                    Debug.Log("x: " + x + " y: " + y);
                 }
 
                 else                                                //같지 않으면 카운트 초기화
@@ -123,9 +127,9 @@ public class MapManager : MonoBehaviour
                     count = 0;
                 }
 
-                if (count >= 3)                                     //아닐때 카운트가 3 이상이라면
+                if (count >= 2)                                     //아닐때 카운트가 3 이상이라면
                 {
-                    for (int i = 0; i < count; i++)
+                    for (int i = 0; i <= count; i++)
                     {
                         matchData[y, x - i] = 1;                    //해당하는 블럭 좌표에 x 매칭임을 표시
                     }
@@ -146,13 +150,6 @@ public class MapManager : MonoBehaviour
                 if (tagetBlock.species == prevShapes)
                 {
                     count++;
-
-                    
-                    if (matchData[y,x] == -1)                           //x,y축 검사가 끝난 블럭임을 표시
-                    {
-                        matchData[y,x] = 0;
-                    }
-                    continue;
                 }
 
                 else
@@ -160,9 +157,14 @@ public class MapManager : MonoBehaviour
                     count = 0;
                 }
 
-                if (count >= 3)                                         
+                if (matchData[y, x] == -1)                              //x,y축 검사가 끝난 블럭임을 표시
                 {
-                    for (int i = 0; i < count; i++)
+                    matchData[y, x] = 0;
+                }
+
+                if (count >= 2)                                         
+                {
+                    for (int i = 0; i <= count; i++)
                     {
                         if (matchData[y - i, x] == 1)                   //x 축 검사에서도 매치가 되었다면
                         {
