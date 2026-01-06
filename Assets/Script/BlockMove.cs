@@ -8,20 +8,26 @@ public class BlockMove : MonoBehaviour
     private Vector3 startPos;
     private Vector3 targetPos;
 
-    public int isMatch = -1;                    // -1 = 초기화 0 = 매치 안 됨 1 = 매치 됨
+    public int isBlockState = -1;                    // -1 = 초기화 0 = 매치 안 됨 1 = 매치 됨 2 = 떨어지는 블럭
 
     // Update is called once per frame
     void Update()
     {
-        if (isMatch == -1) 
+        if (isBlockState == -1) 
             return;
 
-        if (isMatch > -1)
+        if (isBlockState > -1)
         {
-            if (isMatch == 1)
+            if (isBlockState == 1)
             {
                 MoveBlock();
             }
+
+            else if(isBlockState == 2)
+            {
+                fall();
+            }
+
             else
             {
                 Snapback();
@@ -29,18 +35,24 @@ public class BlockMove : MonoBehaviour
         }
     }
 
-    public void MoveStart(bool _matchResult, int[] _targetPos)
+    /// <summary>
+    /// 0 = 매치되지 않음 1 = 매치됨 2 = 떨어지는 블록
+    /// </summary> 
+    public void MoveStart(int _isBlockState, int[] _targetPos)
     {
-        if (_matchResult)
-        { isMatch = 1; moveFrame = 16; }
-        else
-        { isMatch = 0; moveFrame = 24; }
+        isBlockState = _isBlockState;
+
+        if(_isBlockState == 0)
+        { moveFrame = 24; }
+
+        else if (_isBlockState == 1)
+        { moveFrame = 16; }
 
         startPos = transform.position;
         targetPos = new Vector3(_targetPos[0], -_targetPos[1]);
     }
 
-    void MoveBlock()
+    private void MoveBlock()
     {
         if (nowFrame < moveFrame)
         {
@@ -51,12 +63,12 @@ public class BlockMove : MonoBehaviour
 
         // 마지막 위치 보정
         transform.localPosition = targetPos;
-        isMatch = -1;
+        isBlockState = -1;
         nowFrame = 0.0f;
         return;
     }
 
-    void Snapback()
+    private void Snapback()
     {
         if (nowFrame < moveFrame)
         {
@@ -74,8 +86,13 @@ public class BlockMove : MonoBehaviour
         }
 
         transform.position = startPos;
-        isMatch = -1;
+        isBlockState = -1;
         nowFrame= 0.0f;
         return;
+    }
+
+    private void fall()
+    {
+
     }
 }

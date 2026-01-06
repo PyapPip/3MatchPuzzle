@@ -5,6 +5,7 @@ using UnityEngine;
 public class MapManager : MonoBehaviour
 {
     public int[,,] LevelData = new int[1, 5, 5];
+    public int[] blocksToSpawn;
 
 
     MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
@@ -17,9 +18,9 @@ public class MapManager : MonoBehaviour
         GameObject originalBlock = _block;
         GameObject changeBlock = null;
 
-        int x = originalBlock.GetComponent<Block>().x;
-        int y = originalBlock.GetComponent<Block>().y;
-        int[] nowPos = new int[2] { x, y };
+        int block_x = originalBlock.GetComponent<Block>().x;
+        int block_y = originalBlock.GetComponent<Block>().y;
+        int[] nowPos = new int[2] { block_x, block_y };
         int[] targetPos = new int[2];
 
         //dir 1.left 2.right 3.up 4.dawn
@@ -29,29 +30,29 @@ public class MapManager : MonoBehaviour
             case 1:
                 if (_block.GetComponent<Block>().x > 0)
                 {
-                    changeBlock = virtualMap[y, x - 1];
-                    targetPos = new int[2] { x - 1, y };
+                    changeBlock = virtualMap[block_y, block_x - 1];
+                    targetPos = new int[2] { block_x - 1, block_y };
                 }
                 break;
             case 2:
                 if (_block.GetComponent<Block>().x < mapData.GetLength(1))
                 {
-                    changeBlock = virtualMap[y, x + 1];
-                    targetPos = new int[2] { x + 1, y };
+                    changeBlock = virtualMap[block_y, block_x + 1];
+                    targetPos = new int[2] { block_x + 1, block_y };
                 }
                 break;
             case 3:
                 if (_block.GetComponent<Block>().y > 0)
                 {
-                    changeBlock = virtualMap[y - 1, x];
-                    targetPos = new int[2] { x, y - 1 };
+                    changeBlock = virtualMap[block_y - 1, block_x];
+                    targetPos = new int[2] { block_x, block_y - 1 };
                 }
                 break;
             case 4:
                 if (_block.GetComponent<Block>().y < mapData.GetLength(0))
                 {
-                    changeBlock = virtualMap[y + 1, x];
-                    targetPos = new int[2] { x, y + 1 };
+                    changeBlock = virtualMap[block_y + 1, block_x];
+                    targetPos = new int[2] { block_x, block_y + 1 };
                 }
                 break;
         }
@@ -63,38 +64,46 @@ public class MapManager : MonoBehaviour
         if (changeBlock == null)
             return;
         
-        virtualMap[y, x] = changeBlock;
+        virtualMap[block_y, block_x] = changeBlock;
         virtualMap[targetPos[1], targetPos[0]] = originalBlock; 
         (originalBlock, changeBlock) = (changeBlock, originalBlock);
         matchData = MatchChack(virtualMap);
 
         //자리를 바꾸었을때 매치된다면
-        if(matchData[y,x] >= 1 || matchData[targetPos[1], targetPos[0]] >= 1)
+        if(matchData[block_y,block_x] >= 1 || matchData[targetPos[1], targetPos[0]] >= 1)
         {
-            originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(true, nowPos);
-            changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(true, targetPos);
+            originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(1, nowPos);
+            changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(1, targetPos);
 
-            //폭발 처리는 함수화 필요 + 블럭의 이동이 끝난 후 처리해야함.
-            for (int i = 0; i < mapData.GetLength(0); i++)
+            //폭발
+            for (int y = 0; y < mapData.GetLength(0); y++)
             {
-                for (int j = 0; j < mapData.GetLength(1); j++)
+                for (int x = 0; x < mapData.GetLength(1); x++)
                 {
-                    if (matchData[i, j] > 0)
+                    if (matchData[y, x] > 0)
                     {
-
-                        Debug.Log("맞음");
+                        Destroy(mapData[y, x]);
+                        mapData[y, x] = null;
+                        for (int i = y; i >= 0; i--)
+                        {
+                            mapData[i + 1, x] = mapData[i, x];
+                            mapData[i, x] = null;
+                        }
+                        blocksToSpawn[x]++;
                         return;
                     }
                 }
             }
+
+            BlockReSpawn();
         }
 
         //없다면 자릴 바꿨다 돌아오는 연출
         else
         {
             (originalBlock, changeBlock) = (changeBlock, originalBlock);
-            originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, targetPos);
-            changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(false, nowPos);
+            originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(0, targetPos);
+            changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(0, nowPos);
         }
 
         //mapComponent.DataReSet();
@@ -116,22 +125,22 @@ public class MapManager : MonoBehaviour
             for (int x = 0; x < _virtualMap.GetLength(1); x++)
             {
                 Block tagetBlock = _virtualMap[y, x].GetComponent<Block>(); //검사하는 좌표의 블럭의 정보를 받음
-                if (tagetBlock.species == prevShapes)               //해당 블럭의 모양과 이전 모양이 같다면
+                if (tagetBlock.species == prevShapes)                       //해당 블럭의 모양과 이전 모양이 같다면
                 {
-                    count++;                                        //카운트
+                    count++;                                                //카운트
                     Debug.Log("x: " + x + " y: " + y);
                 }
 
-                else                                                //같지 않으면 카운트 초기화
+                else                                                        //같지 않으면 카운트 초기화
                 {
                     count = 0;
                 }
 
-                if (count >= 2)                                     //아닐때 카운트가 3 이상이라면
+                if (count >= 2)                                             //아닐때 카운트가 3 이상이라면
                 {
                     for (int i = 0; i <= count; i++)
                     {
-                        matchData[y, x - i] = 1;                    //해당하는 블럭 좌표에 x 매칭임을 표시
+                        matchData[y, x - i] = 1;                            //해당하는 블럭 좌표에 x 매칭임을 표시
                     }
                 }
 
@@ -142,7 +151,7 @@ public class MapManager : MonoBehaviour
         //y 확인
         for (int x = 0; x < mapData.GetLength(1); x++)
         {
-            count = 0;                                                  //새 열을 검사할때마다 초기화
+            count = 0;                                                      //새 열을 검사할때마다 초기화
 
             for (int y = 0; y < mapData.GetLength(0); y++)
             {
@@ -195,13 +204,12 @@ public class MapManager : MonoBehaviour
 
         int s = UnityEngine.Random.Range(0, mapComponent.SpeciesKind);
 
-        for(int x = 0; x < mapComponent.blocksToSpawn.GetLength(0); x++)
+        for(int x = 0; x < blocksToSpawn.GetLength(0); x++)
         {
-            for (int y = 0; y < mapComponent.blocksToSpawn[x];  y++)
+            for (int y = 0; y < blocksToSpawn[x];  y++)
             {
                 Vector2 pos = new Vector2(x, y + 1);
                 mapComponent.CreateBlock(s, x, y, pos);
-
 
                 //블럭 내려오기
                 //만약 매치된 블럭이 있다면 다시
@@ -272,7 +280,6 @@ public class MapManager : MonoBehaviour
 
     void Start()
     {
-
         // 모듈화 예정
         LevelData = new int[1, 5, 5]{
             {
@@ -285,5 +292,6 @@ public class MapManager : MonoBehaviour
         };
 
         mapComponent.CreateMap(LevelData);
+        blocksToSpawn = new int[LevelData.GetLength(2)];
     }
 }

@@ -11,8 +11,6 @@ public class MapComponent : MonoBehaviour
     /// -1 = 검사되지 않음, 0 = 검사됨, 1 = x축 매치, 2 = y축 매치, 3 = x,y 매치
     /// </summary> 
     public int[,] MatchData;
-    public int[] blocksToSpawn;
-
     public int SpeciesKind = 0;
 
     public void CreateMap(int[,,] levelData)
@@ -20,7 +18,6 @@ public class MapComponent : MonoBehaviour
 
         MapData = new GameObject[levelData.GetLength(1), levelData.GetLength(2)];
         MatchData = new int[levelData.GetLength(1), levelData.GetLength(2)];
-        blocksToSpawn = new int[levelData.GetLength(2)];
 
         for (int y = 0; y < levelData.GetLength(1); y++)
         {
@@ -41,30 +38,8 @@ public class MapComponent : MonoBehaviour
     public void DataReSet()
     {
         Array.Clear(MatchData, -1, MatchData.Length);
-        Array.Clear(blocksToSpawn, 0, blocksToSpawn.Length);
+        //Array.Clear(blocksToSpawn, 0, blocksToSpawn.Length);
     }
-
-    public void DestroyMatchedBlocks()
-    {
-        for (int y = 0; y < MatchData.GetLength(0); y++)
-        {
-            for (int x = 0; x < MatchData.GetLength(1); x++)
-            {
-                if (MatchData[y,x] > 0)
-                {
-                    Destroy(MapData[y, x]);
-                    MapData[y, x] = null;
-                    for(int i = y; i >= 0; i--)
-                    {
-                        MapData[i + 1, x] = MapData[i, x];
-                        MapData[i, x] = null;
-                    }
-                    blocksToSpawn[x]++;
-                }
-            }
-        }
-    }
-
 
     //블럭의 종류는 이 스크립트가 가지고있는게 맞지 않을까?
     //인스턴스의 이름으로도 충분히 어떤 종류의 조각인지 인식할 순 있다.
