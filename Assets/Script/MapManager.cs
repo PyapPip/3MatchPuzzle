@@ -5,8 +5,7 @@ using UnityEngine;
 public class MapManager : MonoBehaviour
 {
     public int[,,] LevelData = new int[1, 5, 5];
-    public int[] blocksToSpawn;
-
+    public int[,] blocksToSpawn;                    
 
     MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
 
@@ -61,8 +60,8 @@ public class MapManager : MonoBehaviour
         Debug.Log("now x: " + nowPos[0] + " y: " + nowPos[1]);
         Debug.Log("target x: " + targetPos[0] + " y: " + targetPos[1]);
 
-        if (changeBlock == null)
-            return;
+        //if (changeBlock == null)
+        //    return;
         
         virtualMap[block_y, block_x] = changeBlock;
         virtualMap[targetPos[1], targetPos[0]] = originalBlock; 
@@ -70,7 +69,7 @@ public class MapManager : MonoBehaviour
         matchData = MatchChack(virtualMap);
 
         //자리를 바꾸었을때 매치된다면
-        if(matchData[block_y,block_x] >= 1 || matchData[targetPos[1], targetPos[0]] >= 1)
+        if (matchData[block_y, block_x] >= 1 || matchData[targetPos[1], targetPos[0]] >= 1)
         {
             originalBlock.gameObject.GetComponent<BlockMove>().MoveStart(1, nowPos);
             changeBlock.gameObject.GetComponent<BlockMove>().MoveStart(1, targetPos);
@@ -89,7 +88,7 @@ public class MapManager : MonoBehaviour
                             mapData[i + 1, x] = mapData[i, x];
                             mapData[i, x] = null;
                         }
-                        blocksToSpawn[x]++;
+                        //blocksToSpawn[x]++;
                         return;
                     }
                 }
@@ -206,14 +205,14 @@ public class MapManager : MonoBehaviour
 
         for(int x = 0; x < blocksToSpawn.GetLength(0); x++)
         {
-            for (int y = 0; y < blocksToSpawn[x];  y++)
-            {
-                Vector2 pos = new Vector2(x, y + 1);
-                mapComponent.CreateBlock(s, x, y, pos);
-
-                //블럭 내려오기
-                //만약 매치된 블럭이 있다면 다시
-            }
+            //for (int y = 0; y < blocksToSpawn[x];  y++)
+            //{
+            //    Vector2 pos = new Vector2(x, y + 1);
+            //    mapComponent.CreateBlock(s, x, y, pos);
+            //
+            //    //블럭 내려오기
+            //    //만약 매치된 블럭이 있다면 다시
+            //}
         }
     }
 
@@ -276,7 +275,7 @@ public class MapManager : MonoBehaviour
     private void Awake()
     {
         Application.targetFrameRate = 60;
-    }
+    }                                                                                                
 
     void Start()
     {
@@ -292,6 +291,6 @@ public class MapManager : MonoBehaviour
         };
 
         mapComponent.CreateMap(LevelData);
-        blocksToSpawn = new int[LevelData.GetLength(2)];
+        blocksToSpawn = new int[LevelData.GetLength(1), LevelData.GetLength(2)];
     }
 }
