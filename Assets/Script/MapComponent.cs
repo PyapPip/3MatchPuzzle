@@ -1,11 +1,10 @@
 ﻿using UnityEngine;
 using System;
-using System.Data;
 
 public class MapComponent : MonoBehaviour
 {
     public GameObject Camera;
-    public GameObject[,] MapData;                   
+    public GameObject[,] MapData;                   //현재 맵의 구성
     public GameObject[] Shapes = new GameObject[5]; //5가지 종류의 블럭을 담아둔 배열
     /// <summary>
     /// -1 = 검사되지 않음, 0 = 검사됨, 1 = x축 매치, 2 = y축 매치, 3 = x,y 매치

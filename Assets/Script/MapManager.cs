@@ -1,11 +1,12 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
     public int[,,] LevelData = new int[1, 5, 5];
-    public int[,] blocksToSpawn;                    
+    public List<Vector2Int> NeedFillPos;
 
     MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
 
@@ -88,7 +89,7 @@ public class MapManager : MonoBehaviour
                             mapData[i + 1, x] = mapData[i, x];
                             mapData[i, x] = null;
                         }
-                        //blocksToSpawn[x]++;
+                        NeedFillPos.Add(new Vector2Int(x, y));
                         return;
                     }
                 }
@@ -203,16 +204,24 @@ public class MapManager : MonoBehaviour
 
         int s = UnityEngine.Random.Range(0, mapComponent.SpeciesKind);
 
-        for(int x = 0; x < blocksToSpawn.GetLength(0); x++)
+        //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
+        for(int i = 0; i < NeedFillPos.Count; i++)
         {
-            //for (int y = 0; y < blocksToSpawn[x];  y++)
-            //{
-            //    Vector2 pos = new Vector2(x, y + 1);
-            //    mapComponent.CreateBlock(s, x, y, pos);
-            //
-            //    //블럭 내려오기
-            //    //만약 매치된 블럭이 있다면 다시
-            //}
+            for (int y = NeedFillPos[i].y; y >= 0; y--)
+            {
+                mapData[y, NeedFillPos[i].x].GetComponent<Block>().fall++;
+            }
+        }
+
+        for (int y = 0; y < mapData.GetLength(0); y++)
+        {
+            for(int x = 0; x < mapData.GetLength(1); x++)
+            {
+                if (mapData[y,x].GetComponent<Block>().fall != 0)
+                {
+                    //애니메이션 재생
+                }
+            }
         }
     }
 
@@ -291,6 +300,5 @@ public class MapManager : MonoBehaviour
         };
 
         mapComponent.CreateMap(LevelData);
-        blocksToSpawn = new int[LevelData.GetLength(1), LevelData.GetLength(2)];
     }
 }

@@ -8,30 +8,37 @@ public class BlockMove : MonoBehaviour
     private Vector3 startPos;
     private Vector3 targetPos;
 
-    public int isBlockState = -1;                    // -1 = 초기화 0 = 매치 안 됨 1 = 매치 됨 2 = 떨어지는 블럭
+    public BlockAnimState animState;                    // -1 = 초기화 0 = 매치 안 됨 1 = 매치 됨 2 = 떨어지는 블럭
+
+    public enum BlockAnimState
+    {
+        Idle,
+        Matched,
+        NotMatched,
+        Falling,
+        Destroyed
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (isBlockState == -1) 
+        if (animState == BlockAnimState.Idle)
             return;
 
-        if (isBlockState > -1)
+        //스위치문으로 변경
+        if (animState == BlockAnimState.Matched)
         {
-            if (isBlockState == 1)
-            {
-                MoveBlock();
-            }
+            MoveBlock();
+        }
 
-            else if(isBlockState == 2)
-            {
-                fall();
-            }
+        else if ()
+        {
+            Snapback();
+        }
 
-            else
-            {
-                Snapback();
-            }
+        else if (animState == BlockAnimState.Falling)
+        {
+            fall();
         }
     }
 
@@ -40,7 +47,7 @@ public class BlockMove : MonoBehaviour
     /// </summary> 
     public void MoveStart(int _isBlockState, int[] _targetPos)
     {
-        isBlockState = _isBlockState;
+        animState = (BlockAnimState)_isBlockState;
 
         if(_isBlockState == 0)
         { moveFrame = 24; }
@@ -63,7 +70,7 @@ public class BlockMove : MonoBehaviour
 
         // 마지막 위치 보정
         transform.localPosition = targetPos;
-        isBlockState = -1;
+        animState = BlockAnimState.Idle;
         nowFrame = 0.0f;
         return;
     }
@@ -86,8 +93,8 @@ public class BlockMove : MonoBehaviour
         }
 
         transform.position = startPos;
-        isBlockState = -1;
-        nowFrame= 0.0f;
+        animState = BlockAnimState.Idle;
+        nowFrame = 0.0f;
         return;
     }
 

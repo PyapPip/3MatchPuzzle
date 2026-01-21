@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    public int x, y, species;
+    public int x, y, species, fall = 0;
     //public int isMatchChack = -1;   //-1.unconfirmed 0.not match 1.width 2.length 3.both
 }
