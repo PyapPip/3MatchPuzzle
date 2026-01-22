@@ -15,8 +15,8 @@ public class BlockMove : MonoBehaviour
         Idle,
         Matched,
         NotMatched,
-        Falling,
-        Destroyed
+        Falling
+        //,Destroyed  
     }
 
     // Update is called once per frame
@@ -31,7 +31,7 @@ public class BlockMove : MonoBehaviour
             MoveBlock();
         }
 
-        else if ()
+        else if (animState == BlockAnimState.NotMatched)
         {
             Snapback();
         }
@@ -43,7 +43,7 @@ public class BlockMove : MonoBehaviour
     }
 
     /// <summary>
-    /// 0 = 매치되지 않음 1 = 매치됨 2 = 떨어지는 블록
+    /// 0 = idle 1 = matched 2 = notMatched 3 = falling
     /// </summary> 
     public void MoveStart(int _isBlockState, int[] _targetPos)
     {
@@ -54,6 +54,9 @@ public class BlockMove : MonoBehaviour
 
         else if (_isBlockState == 1)
         { moveFrame = 16; }
+
+        else
+        { moveFrame = 0; }
 
         startPos = transform.position;
         targetPos = new Vector3(_targetPos[0], -_targetPos[1]);
@@ -100,6 +103,6 @@ public class BlockMove : MonoBehaviour
 
     private void fall()
     {
-
+        //시작지점 -> 가속도 -> 더해졌을때 목표지점보다 클때 목표지점으로 지정
     }
 }

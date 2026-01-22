@@ -90,12 +90,11 @@ public class MapManager : MonoBehaviour
                             mapData[i, x] = null;
                         }
                         NeedFillPos.Add(new Vector2Int(x, y));
-                        return;
                     }
                 }
             }
 
-            BlockReSpawn();
+            //BlockReSpawn();
         }
 
         //없다면 자릴 바꿨다 돌아오는 연출
