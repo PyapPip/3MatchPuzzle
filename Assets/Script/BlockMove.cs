@@ -8,13 +8,13 @@ public class BlockMove : MonoBehaviour
     private Vector3 startPos;
     private Vector3 targetPos;
 
-    public BlockAnimState animState;                    // -1 = 초기화 0 = 매치 안 됨 1 = 매치 됨 2 = 떨어지는 블럭
+    public BlockAnimState animState; 
 
     public enum BlockAnimState
     {
         Idle,
-        Matched,
-        NotMatched,
+        Swaping,
+        Snapback,
         Falling
         //,Destroyed  
     }
@@ -26,12 +26,12 @@ public class BlockMove : MonoBehaviour
             return;
 
         //스위치문으로 변경
-        if (animState == BlockAnimState.Matched)
+        if (animState == BlockAnimState.Swaping)
         {
             MoveBlock();
         }
 
-        else if (animState == BlockAnimState.NotMatched)
+        else if (animState == BlockAnimState.Snapback)
         {
             Snapback();
         }

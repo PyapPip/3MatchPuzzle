@@ -12,26 +12,26 @@ public class MapComponent : MonoBehaviour
     public int[,] MatchData;
     public int SpeciesKind = 0;
 
-    public void CreateMap(int[,,] levelData)
+    public void CreateMap(int[,,] _levelData)
     {
 
-        MapData = new GameObject[levelData.GetLength(1), levelData.GetLength(2)];
-        MatchData = new int[levelData.GetLength(1), levelData.GetLength(2)];
+        MapData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
+        MatchData = new int[_levelData.GetLength(1), _levelData.GetLength(2)];
 
-        for (int y = 0; y < levelData.GetLength(1); y++)
+        for (int y = 0; y < _levelData.GetLength(1); y++)
         {
-            for (int x = 0; x < levelData.GetLength(2); x++)
+            for (int x = 0; x < _levelData.GetLength(2); x++)
             {
-                CreateBlock(levelData[0, y, x], x, y);
+                CreateBlock(_levelData[0, y, x], x, y);
 
-                if (SpeciesKind < levelData[0, y, x])
+                if (SpeciesKind < _levelData[0, y, x])
                 {
-                    SpeciesKind = levelData[0, y, x];
+                    SpeciesKind = _levelData[0, y, x];
                 }
             }
         }
 
-        Camera.transform.position = new Vector3(levelData.GetLength(2) / 2, -levelData.GetLength(1) / 2, -1);
+        Camera.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
     }
 
     public void DataReSet()
@@ -42,28 +42,28 @@ public class MapComponent : MonoBehaviour
 
     //블럭의 종류는 이 스크립트가 가지고있는게 맞지 않을까?
     //인스턴스의 이름으로도 충분히 어떤 종류의 조각인지 인식할 순 있다.
-    public void CreateBlock(int shapes, int x, int y)
+    public void CreateBlock(int _shapes, int _x, int _y)
     {
-        GameObject instance = Instantiate(Shapes[shapes], this.transform);
-        instance.GetComponent<Block>().x = x;
-        instance.GetComponent<Block>().y = y;
-        instance.GetComponent<Block>().species = shapes;
-        instance.transform.position = new Vector2(x, -y);
+        GameObject instance = Instantiate(Shapes[_shapes], this.transform);
+        instance.GetComponent<Block>().x = _x;
+        instance.GetComponent<Block>().y = _y;
+        instance.GetComponent<Block>().species = _shapes;
+        instance.transform.position = new Vector2(_x, -_y);
 
-        MatchData[y, x] = -1;
-        MapData[y, x] = instance;
+        MatchData[_y, _x] = -1;
+        MapData[_y, _x] = instance;
     }
     
     //좌표 지정을 위해 오버라이딩한 함수
-    public void CreateBlock(int shapes, int x, int y, Vector2 pos)
+    public void CreateBlock(int _shapes, int _x, int _y, Vector2 _pos)
     {
-        GameObject instance = Instantiate(Shapes[shapes], this.transform);
-        instance.GetComponent<Block>().x = x;
-        instance.GetComponent<Block>().y = y;
-        instance.GetComponent<Block>().species = shapes;
-        instance.transform.position = pos;
+        GameObject instance = Instantiate(Shapes[_shapes], this.transform);
+        instance.GetComponent<Block>().x = _x;
+        instance.GetComponent<Block>().y = _y;
+        instance.GetComponent<Block>().species = _shapes;
+        instance.transform.position = _pos;
 
-        MatchData[y, x] = -1;
-        MapData[y, x] = instance;
+        MatchData[_y, _x] = -1;
+        MapData[_y, _x] = instance;
     }
 }
