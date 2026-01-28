@@ -6,40 +6,24 @@ public class MouseManager : MonoBehaviour
     public GameManager gameManager;
 
     public GameObject Map;
-    public bool isCanClick = true;
-    public GameObject selectedBlocks;
 
     public void BlcokSelect()
     {
-        if (Input.GetMouseButtonUp(0))
-        {
-            isCanClick = true;
-        }
-
-        if (!isCanClick)
-            return;
-
-        if (Input.GetMouseButtonDown(0) && isCanClick)
+        if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit))
             {
-                isCanClick = false;                                     //중복 클릭 방지
+                Block hitBlock = hit.collider.gameObject.GetComponent<Block>();
 
-                if (selectedBlocks == null)
-                {
-                    selectedBlocks = hit.collider.gameObject;
-                    gameManager.ChangeGameState(1);
-                }
+                gameManager.OnClick(new Vector2Int(hitBlock.x, hitBlock.y));
+            }
+        }
+    }
 
-                else
-                {
-                    Debug.Log("예외발생 : wait");
-                    return;
-                }
-                /*
+    /*
                 else
                 {
                     MapManager m = Map.GetComponent<MapManager>();
@@ -80,10 +64,7 @@ public class MouseManager : MonoBehaviour
                     }
                 }
                 */
-            }
-        }
-    }
-
+    /*
     public void BlockSwap()
     {
         if (Input.GetMouseButtonUp(0))
@@ -148,4 +129,5 @@ public class MouseManager : MonoBehaviour
             }
         }
     }
+    */
 }
