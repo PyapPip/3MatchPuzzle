@@ -10,6 +10,11 @@ public class MapManager : MonoBehaviour
 
     MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
 
+    public void ChangeBlock(Vector2Int _selectBlockPos, Vector2Int dir)
+    {
+        GameObject[,] mapData = mapComponent.MapData;
+    }
+
     public void ChangeBlock(GameObject _block, int _dir)
     {
         GameObject[,] mapData = mapComponent.MapData;
