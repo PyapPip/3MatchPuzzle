@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
                     //인접한 블럭 클릭 시(미구현)
                     if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) == 1)
                     {
-                        mapManager.ChangeBlock(selecBlockPos, diff);
+                        mapManager.BlockSwap(selecBlockPos, diff);
                     }
 
                     //먼 거리 -> 재 선택

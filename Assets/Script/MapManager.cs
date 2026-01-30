@@ -10,9 +10,17 @@ public class MapManager : MonoBehaviour
 
     MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
 
-    public void ChangeBlock(Vector2Int _selectBlockPos, Vector2Int dir)
+    public void BlockSwap(Vector2Int _selectBlockPos, Vector2Int dir)
     {
         GameObject[,] mapData = mapComponent.MapData;
+        int[,] matchData = mapComponent.MatchData;
+
+        GameObject selectBlock = mapData[_selectBlockPos.y, _selectBlockPos.x];
+        GameObject targetBlock = mapData[_selectBlockPos.y + dir.y, _selectBlockPos.x + dir.x];
+
+        int[,] virtualMap = new int[mapData.GetLength(1),mapData.GetLength(0)];
+
+        if ()
     }
 
     public void ChangeBlock(GameObject _block, int _dir)
@@ -112,6 +120,8 @@ public class MapManager : MonoBehaviour
 
         //mapComponent.DataReSet();
     }
+
+    int[,]
         
     //
     int[,] MatchChack(GameObject[,] _virtualMap)
