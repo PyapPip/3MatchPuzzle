@@ -20,7 +20,13 @@ public class MapManager : MonoBehaviour
 
         int[,] virtualMap = new int[mapData.GetLength(1),mapData.GetLength(0)];
 
-        if ()
+        for (int x = 0; x < virtualMap.GetLength(0); x++)
+        {
+            for (int y = 0; y < virtualMap.GetLength(1); y++)
+            {
+                virtualMap[x, y] = mapData[y, x].GetComponent<Block>().species;
+            }
+        }
     }
 
     public void ChangeBlock(GameObject _block, int _dir)
@@ -121,12 +127,93 @@ public class MapManager : MonoBehaviour
         //mapComponent.DataReSet();
     }
 
-    int[,]
+    int[,] MatchChack(int[,] _virtualMap)
+    {
+        bool isMatched = false;
+
+        int count = 1;
+        int prevShapes = -1;
+
+        int[,] matchedBlocks = new int[_virtualMap.GetLength(0), _virtualMap.GetLength(1)];
+
+        //xy 검사
+        for (int y = 0; y < _virtualMap.GetLength(1); y++)
+        {
+            count = 1;  //새 행을 검사할때 마다 초기화
+            prevShapes = -1;
+
+            for (int x = 0; x < _virtualMap.GetLength(0); x++)
+            {
+                if(prevShapes == _virtualMap[x,y])
+                {
+                    count++;
+                }
+
+                else
+                {
+                    count = 0;
+                }
+
+                if(count > 2)
+                {
+                    isMatched = true;
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        matchedBlocks[x - i, y] = 1;
+                    }
+                }
+            }
+        }
+
+        for (int x = 0; x < _virtualMap.GetLength(1); x++)
+        {
+            count = 1;  //새 행을 검사할때 마다 초기화
+            prevShapes = -1;
+
+            for (int y = 0; y < _virtualMap.GetLength(0); y++)
+            {
+                if (prevShapes == _virtualMap[x, y])
+                {
+                    count++;
+                }
+
+                else
+                {
+                    count = 0;
+                }
+
+                if (count > 2)
+                {
+                    isMatched = true;
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        if(matchedBlocks[x, y - i] == 1)
+                        {
+                            matchedBlocks[x, y - i] = 3;
+                        }
+                        else
+                        {
+                            matchedBlocks[x, y - i] = 2;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (isMatched)
+        {
+            return matchedBlocks;
+        }
+
+        return null;
+    }
         
     //
     int[,] MatchChack(GameObject[,] _virtualMap)
     {
-        int count = 0;                                  //검사중 같은 블럭이 있다면 ++
+        int count = 1;                                  //검사중 같은 블럭이 있다면 ++
         int prevShapes = -1;
         GameObject[,] mapData = mapComponent.MapData;
         int[,] matchData = mapComponent.MatchData;
@@ -135,6 +222,7 @@ public class MapManager : MonoBehaviour
         for (int y = 0; y < _virtualMap.GetLength(0); y++)
         {
             count = 0;  //새 행을 검사할때마다 초기화
+            prevShapes = -1;
 
             for (int x = 0; x < _virtualMap.GetLength(1); x++)
             {
@@ -147,10 +235,10 @@ public class MapManager : MonoBehaviour
 
                 else                                                        //같지 않으면 카운트 초기화
                 {
-                    count = 0;
+                    count = 1;
                 }
 
-                if (count >= 2)                                             //아닐때 카운트가 3 이상이라면
+                if (count >= 3)                                             //아닐때 카운트가 3 이상이라면
                 {
                     for (int i = 0; i <= count; i++)
                     {
@@ -199,6 +287,7 @@ public class MapManager : MonoBehaviour
                         }
                     }
                 }
+
                 prevShapes = tagetBlock.species;
             }
         }

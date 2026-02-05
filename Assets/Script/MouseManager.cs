@@ -31,7 +31,7 @@ public class MouseManager : MonoBehaviour
                 if (selectedBlocks == null)
                 {
                     selectedBlocks = hit.collider.gameObject;
-                    gameManager.ChangeGameState(1);
+                    gameManager.ChangeGameState(GameState.select);
                 }
 
                 else
