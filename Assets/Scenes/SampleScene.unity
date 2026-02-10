@@ -262,6 +262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d05f81b0dc40970439a859fac6c6b7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 2058106821}
   NeedFillPos: []
 --- !u!4 &797188083
 Transform:
@@ -371,7 +372,6 @@ MonoBehaviour:
   gameManager: {fileID: 2058106821}
   Map: {fileID: 797188080}
   isCanClick: 1
-  selectedBlocks: {fileID: 0}
 --- !u!4 &1219802963
 Transform:
   m_ObjectHideFlags: 0

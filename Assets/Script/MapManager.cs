@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
+    public GameManager gameManager;
+
     public int[,,] LevelData = new int[1, 5, 5];
     public List<Vector2Int> NeedFillPos;
 
@@ -13,12 +15,11 @@ public class MapManager : MonoBehaviour
     public void BlockSwap(Vector2Int _selectBlockPos, Vector2Int dir)
     {
         GameObject[,] mapData = mapComponent.MapData;
-        int[,] matchData = mapComponent.MatchData;
-
-        GameObject selectBlock = mapData[_selectBlockPos.y, _selectBlockPos.x];
-        GameObject targetBlock = mapData[_selectBlockPos.y + dir.y, _selectBlockPos.x + dir.x];
-
         int[,] virtualMap = new int[mapData.GetLength(1),mapData.GetLength(0)];
+        int[,] matchData = new int[mapData.GetLength(1), mapData.GetLength(0)];
+
+        Block selectBlock = mapData[_selectBlockPos.y, _selectBlockPos.x].GetComponent<Block>();
+        Block targetBlock = mapData[_selectBlockPos.y + dir.y, _selectBlockPos.x + dir.x].GetComponent<Block>();
 
         for (int x = 0; x < virtualMap.GetLength(0); x++)
         {
@@ -27,8 +28,123 @@ public class MapManager : MonoBehaviour
                 virtualMap[x, y] = mapData[y, x].GetComponent<Block>().species;
             }
         }
+
+        (virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y], virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y])
+        = (virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y], virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y]);
+
+        NeedFillPos = MatchChack(virtualMap);
+
+        //매치 되지 않았다면
+        if(NeedFillPos.Count == 0)
+        {
+            
+        }
+
+        else
+        {
+
+        }
     }
 
+    List<Vector2Int> MatchChack(int[,] _virtualMap)
+    {
+        int count = 1;
+        int prevShapes = -1;
+
+        List<Vector2Int> matchedBlocks = new List<Vector2Int>();
+
+        //xy 검사
+        for (int y = 0; y < _virtualMap.GetLength(1); y++)
+        {
+            count = 1;  //새 행을 검사할때 마다 초기화
+            prevShapes = -1;
+
+            for (int x = 0; x < _virtualMap.GetLength(0); x++)
+            {
+                if (prevShapes == _virtualMap[x, y])
+                {
+                    count++;
+                }
+
+                else
+                {
+                    prevShapes = _virtualMap[x, y];
+                    count = 0;
+                }
+
+                if (count > 2)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        matchedBlocks.Add(new Vector2Int(x - i, y));
+                    }
+                }
+            }
+        }
+
+        for (int x = 0; x < _virtualMap.GetLength(0); x++)
+        {
+            count = 1;  //새 행을 검사할때 마다 초기화
+            prevShapes = -1;
+
+            for (int y = 0; y < _virtualMap.GetLength(1); y++)
+            {
+                if (prevShapes == _virtualMap[x, y])
+                {
+                    count++;
+                }
+
+                else
+                {
+                    prevShapes = _virtualMap[x, y];
+                    count = 0;
+                }
+
+                if (count > 2)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        matchedBlocks.Add(new Vector2Int(x, y - i));
+                    }
+                }
+            }
+        }
+        return matchedBlocks;
+    }
+
+    //생성하는 x좌표에 맞춰 여러개를 위에 쌓는식으로 생성해주면 끝 아님?
+    //파괴하면서 y좌표의 이동이 일어날부분을 미리 바꿔야하지 않을까?
+    //파괴한 블럭의 위 블럭들의 y좌표를 1씩 내려주면 된다.
+    //블럭이 떨어지는 연출은 유니티 자체의 물리를 이용하면 되는거 아님?
+    public void BlockReSpawn()
+    {
+        GameObject[,] mapData = mapComponent.MapData;
+        int[,] matchData = mapComponent.MatchData;
+
+        int s = UnityEngine.Random.Range(0, mapComponent.SpeciesKind);
+
+        //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
+        for (int i = 0; i < NeedFillPos.Count; i++)
+        {
+            for (int y = NeedFillPos[i].y; y >= 0; y--)
+            {
+                mapData[y, NeedFillPos[i].x].GetComponent<Block>().fall++;
+            }
+        }
+
+        for (int y = 0; y < mapData.GetLength(0); y++)
+        {
+            for (int x = 0; x < mapData.GetLength(1); x++)
+            {
+                if (mapData[y, x].GetComponent<Block>().fall != 0)
+                {
+                    //애니메이션 재생
+                }
+            }
+        }
+    }
+
+    //이 주석 기준 아래 코드는 교체 예정
     public void ChangeBlock(GameObject _block, int _dir)
     {
         GameObject[,] mapData = mapComponent.MapData;
@@ -82,9 +198,9 @@ public class MapManager : MonoBehaviour
 
         //if (changeBlock == null)
         //    return;
-        
+
         virtualMap[block_y, block_x] = changeBlock;
-        virtualMap[targetPos[1], targetPos[0]] = originalBlock; 
+        virtualMap[targetPos[1], targetPos[0]] = originalBlock;
         (originalBlock, changeBlock) = (changeBlock, originalBlock);
         matchData = MatchChack(virtualMap);
 
@@ -127,90 +243,6 @@ public class MapManager : MonoBehaviour
         //mapComponent.DataReSet();
     }
 
-    int[,] MatchChack(int[,] _virtualMap)
-    {
-        bool isMatched = false;
-
-        int count = 1;
-        int prevShapes = -1;
-
-        int[,] matchedBlocks = new int[_virtualMap.GetLength(0), _virtualMap.GetLength(1)];
-
-        //xy 검사
-        for (int y = 0; y < _virtualMap.GetLength(1); y++)
-        {
-            count = 1;  //새 행을 검사할때 마다 초기화
-            prevShapes = -1;
-
-            for (int x = 0; x < _virtualMap.GetLength(0); x++)
-            {
-                if(prevShapes == _virtualMap[x,y])
-                {
-                    count++;
-                }
-
-                else
-                {
-                    count = 0;
-                }
-
-                if(count > 2)
-                {
-                    isMatched = true;
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        matchedBlocks[x - i, y] = 1;
-                    }
-                }
-            }
-        }
-
-        for (int x = 0; x < _virtualMap.GetLength(1); x++)
-        {
-            count = 1;  //새 행을 검사할때 마다 초기화
-            prevShapes = -1;
-
-            for (int y = 0; y < _virtualMap.GetLength(0); y++)
-            {
-                if (prevShapes == _virtualMap[x, y])
-                {
-                    count++;
-                }
-
-                else
-                {
-                    count = 0;
-                }
-
-                if (count > 2)
-                {
-                    isMatched = true;
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        if(matchedBlocks[x, y - i] == 1)
-                        {
-                            matchedBlocks[x, y - i] = 3;
-                        }
-                        else
-                        {
-                            matchedBlocks[x, y - i] = 2;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (isMatched)
-        {
-            return matchedBlocks;
-        }
-
-        return null;
-    }
-        
-    //
     int[,] MatchChack(GameObject[,] _virtualMap)
     {
         int count = 1;                                  //검사중 같은 블럭이 있다면 ++
@@ -293,39 +325,6 @@ public class MapManager : MonoBehaviour
         }
 
         return matchData;
-    }
-    
-
-    //생성하는 x좌표에 맞춰 여러개를 위에 쌓는식으로 생성해주면 끝 아님?
-    //파괴하면서 y좌표의 이동이 일어날부분을 미리 바꿔야하지 않을까?
-    //파괴한 블럭의 위 블럭들의 y좌표를 1씩 내려주면 된다.
-    //블럭이 떨어지는 연출은 유니티 자체의 물리를 이용하면 되는거 아님?
-    public void BlockReSpawn()
-    {
-        GameObject[,] mapData = mapComponent.MapData;
-        int[,] matchData = mapComponent.MatchData;
-
-        int s = UnityEngine.Random.Range(0, mapComponent.SpeciesKind);
-
-        //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
-        for(int i = 0; i < NeedFillPos.Count; i++)
-        {
-            for (int y = NeedFillPos[i].y; y >= 0; y--)
-            {
-                mapData[y, NeedFillPos[i].x].GetComponent<Block>().fall++;
-            }
-        }
-
-        for (int y = 0; y < mapData.GetLength(0); y++)
-        {
-            for(int x = 0; x < mapData.GetLength(1); x++)
-            {
-                if (mapData[y,x].GetComponent<Block>().fall != 0)
-                {
-                    //애니메이션 재생
-                }
-            }
-        }
     }
 
     //블럭 위치를 교환하였을때 3매치가 가능한지 확인하는 함수

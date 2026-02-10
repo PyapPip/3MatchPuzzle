@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     private GameState gameState;
 
     private Vector2Int selecBlockPos = new Vector2Int(-1, -1);      //초기값
+    private bool isMatched
 
     /// <summary>
     /// 0.wait  1.select  2.move  3.destroy  4.fail
@@ -34,7 +35,10 @@ public class GameManager : MonoBehaviour
     public void OnClick(Vector2Int _pos)
     {
         if (gameState != GameState.wait && gameState != GameState.select)
-            return;
+        {
+            Debug.Log("OnClick 예외");
+            return; 
+        }
 
         switch (gameState)
         {
@@ -72,6 +76,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+
     void Update()
     {
         switch (gameState)
@@ -85,7 +91,6 @@ public class GameManager : MonoBehaviour
 
             case GameState.move:
                 {
-                    //mapManager.
                     return;
                 }
             case GameState.fall:

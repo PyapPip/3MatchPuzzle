@@ -45,8 +45,7 @@ public class MapComponent : MonoBehaviour
     public void CreateBlock(int _shapes, int _x, int _y)
     {
         GameObject instance = Instantiate(Shapes[_shapes], this.transform);
-        instance.GetComponent<Block>().x = _x;
-        instance.GetComponent<Block>().y = _y;
+        instance.GetComponent<Block>().boardPos = new Vector2Int(_x, _y);
         instance.GetComponent<Block>().species = _shapes;
         instance.transform.position = new Vector2(_x, -_y);
 
