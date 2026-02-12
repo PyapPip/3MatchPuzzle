@@ -8,11 +8,11 @@ public class BlockMove : MonoBehaviour
     private Vector3 startPos;
     private Vector3 targetPos;
 
-    public BlockAnimState animState; 
+    public BlockAnimState animState = BlockAnimState.wait; 
 
     public enum BlockAnimState
     {
-        Idle,
+        wait,
         Swaping,
         Snapback,
         Falling
@@ -22,23 +22,27 @@ public class BlockMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (animState == BlockAnimState.Idle)
-            return;
-
-        //스위치문으로 변경
-        if (animState == BlockAnimState.Swaping)
+        switch (animState)
         {
-            MoveBlock();
-        }
-
-        else if (animState == BlockAnimState.Snapback)
-        {
-            Snapback();
-        }
-
-        else if (animState == BlockAnimState.Falling)
-        {
-            fall();
+            case BlockAnimState.wait:
+                {
+                    return;
+                }
+            case BlockAnimState.Swaping:
+                {
+                    MoveBlock();
+                    return;
+                }
+            case BlockAnimState.Snapback:
+                {
+                    Snapback();
+                    return;
+                }
+            case BlockAnimState.Falling:
+                {
+                    fall();
+                    return;
+                }
         }
     }
 
@@ -73,7 +77,7 @@ public class BlockMove : MonoBehaviour
 
         // 마지막 위치 보정
         transform.localPosition = targetPos;
-        animState = BlockAnimState.Idle;
+        animState = BlockAnimState.wait;
         nowFrame = 0.0f;
         return;
     }
@@ -96,7 +100,7 @@ public class BlockMove : MonoBehaviour
         }
 
         transform.position = startPos;
-        animState = BlockAnimState.Idle;
+        animState = BlockAnimState.wait;
         nowFrame = 0.0f;
         return;
     }

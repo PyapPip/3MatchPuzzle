@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     private GameState gameState;
 
     private Vector2Int selecBlockPos = new Vector2Int(-1, -1);      //�ʱⰪ
-    private bool isMatched
+    private bool isMatched;
 
     /// <summary>
     /// 0.wait  1.select  2.move  3.destroy  4.fail
@@ -74,6 +74,12 @@ public class GameManager : MonoBehaviour
                     return;
                 }
         }
+    }
+
+    public void MatchResult(bool _result)
+    {
+        ChangeGameState(GameState.move);
+        
     }
 
 

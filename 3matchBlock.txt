@@ -83,8 +83,18 @@ if문의 문제가 아님. 블럭 위치를 바꿀때에 배열에 값이 제대
 
 1/30
 BlockSwap 구현중
+MaatchChack의 가상 맵을 GameObject 배열이 아닌 int 배열로 바꾸기
+
+2/6
+Mouse 함수 미적용 되어있던것 수정
+블럭 보드 좌표 Vector2Int로 변경
+
+2/12
+GameManager와 BlockMove의 연결 필요.
+blockManager의 필요성을 느끼고 추가 예정.
 
 FIX LATER
 보드 좌표계의 직관성 (y, x 순서임. 보드의 구성과 생성, 좌표를 이용한 각종 기능들에 수정 필요.)
 block의 x y 변수 -> Vector2dInt 로 변환
 MapManager의 MapData는 함수별로 mapData를 받아 쓰고있다. 그냥 전역변수로 처리하면 안되나?
+MatchChack 의 확인은 GameObject[,] 가 아닌 vectorInt2를 이용하자

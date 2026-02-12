@@ -37,12 +37,12 @@ public class MapManager : MonoBehaviour
         //매치 되지 않았다면
         if(NeedFillPos.Count == 0)
         {
-            
+            gameManager.MatchResult(false);
         }
 
         else
         {
-
+            gameManager.MatchResult(true);
         }
     }
 
