@@ -79,7 +79,8 @@ public class GameManager : MonoBehaviour
     public void MatchResult(bool _result)
     {
         ChangeGameState(GameState.move);
-        
+
+        isMatched = _result;
     }
 
 

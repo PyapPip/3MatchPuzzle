@@ -93,6 +93,12 @@ Mouse 함수 미적용 되어있던것 수정
 GameManager와 BlockMove의 연결 필요.
 blockManager의 필요성을 느끼고 추가 예정.
 
+2/20
+blockManager를 만들 필요성 느낌.
+GameManager, MapManager 이 둘이 블럭에 직접 개입하는것이 부자연스러우며, 역할에 맞지 않기 때문.
+MapComponent를 boardManager와 BlockManager로 나누어줄 필요가 있음.
+
+
 FIX LATER
 보드 좌표계의 직관성 (y, x 순서임. 보드의 구성과 생성, 좌표를 이용한 각종 기능들에 수정 필요.)
 block의 x y 변수 -> Vector2dInt 로 변환
