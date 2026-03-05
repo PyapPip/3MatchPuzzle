@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class BlockMove : MonoBehaviour
@@ -22,12 +21,11 @@ public class BlockMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (animState == BlockAnimState.wait) 
+            return;
+
         switch (animState)
         {
-            case BlockAnimState.wait:
-                {
-                    return;
-                }
             case BlockAnimState.Swaping:
                 {
                     MoveBlock();
@@ -49,14 +47,14 @@ public class BlockMove : MonoBehaviour
     /// <summary>
     /// 0 = idle 1 = matched 2 = notMatched 3 = falling
     /// </summary> 
-    public void MoveStart(int _isBlockState, int[] _targetPos)
+    public void MoveStart(int _moveType, int[] _targetPos)
     {
-        animState = (BlockAnimState)_isBlockState;
+        animState = (BlockAnimState)_moveType;
 
-        if(_isBlockState == 0)
+        if(_moveType == 0)
         { moveFrame = 24; }
 
-        else if (_isBlockState == 1)
+        else if (_moveType == 1)
         { moveFrame = 16; }
 
         else

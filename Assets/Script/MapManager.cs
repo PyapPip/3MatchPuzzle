@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class MapManager : MonoBehaviour
@@ -13,19 +11,16 @@ public class MapManager : MonoBehaviour
     private List<Vector2Int> NeedFillPos;
     private int SpeciesKind;
     private int[,,] LevelData = new int[1, 5, 5];
-    
-
-    MapComponent mapComponent => gameObject.GetComponent<MapComponent>();
 
     //블럭 스왑
-    public void BlockSwap(Vector2Int _selectBlockPos, Vector2Int dir)
+    public void BlockSwap(Vector2Int _targetBlockPos, Vector2Int _dir)
     {
         
         int[,] virtualMap = new int[MapData.GetLength(1), MapData.GetLength(0)];
         int[,] matchData = new int[MapData.GetLength(1), MapData.GetLength(0)];
 
-        Block selectBlock = MapData[_selectBlockPos.y, _selectBlockPos.x].GetComponent<Block>();
-        Block targetBlock = MapData[_selectBlockPos.y + dir.y, _selectBlockPos.x + dir.x].GetComponent<Block>();
+        Block selectBlock = MapData[_targetBlockPos.y, _targetBlockPos.x].GetComponent<Block>();
+        Block targetBlock = MapData[_targetBlockPos.y + _dir.y, _targetBlockPos.x + _dir.x].GetComponent<Block>();
 
         for (int x = 0; x < virtualMap.GetLength(0); x++)
         {
@@ -43,12 +38,12 @@ public class MapManager : MonoBehaviour
         //매치 되지 않았다면
         if(NeedFillPos.Count == 0)
         {
-            gameManager.MatchResult(false);
+            gameManager.MatchResult(false, _targetBlockPos, _dir);
         }
 
         else
         {
-            gameManager.MatchResult(true);
+            gameManager.MatchResult(true, _targetBlockPos, _dir);
         }
     }
 
@@ -119,10 +114,33 @@ public class MapManager : MonoBehaviour
         return matchedBlocks;
     }
 
+    //이 주석 아래는 수정 예정
+    public void CreateMap(int[,,] _levelData)
+    {
+        BlockManager blcokManager = this.gameObject.GetComponent<BlockManager>();
+
+        MapData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
+
+        for (int y = 0; y < _levelData.GetLength(1); y++)
+        {
+            for (int x = 0; x < _levelData.GetLength(2); x++)
+            {
+                MapData[y, x] = blcokManager.CreateBlock(_levelData[0, y, x], x, y);
+
+                if (SpeciesKind < _levelData[0, y, x])
+                {
+                    SpeciesKind = _levelData[0, y, x];
+                }
+            }
+        }
+
+        Camera.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
+    }
+
     //블럭 리스폰
     public void BlockReSpawn()
     {
-        int s = UnityEngine.Random.Range(0, mapComponent.SpeciesKind);
+        int s = UnityEngine.Random.Range(0, SpeciesKind);
 
         //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
         for (int i = 0; i < NeedFillPos.Count; i++)
@@ -143,28 +161,6 @@ public class MapManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    //이 주석 아래는 수정 예정
-    public void CreateMap(int[,,] _levelData)
-    {
-
-        MapData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
-
-        for (int y = 0; y < _levelData.GetLength(1); y++)
-        {
-            for (int x = 0; x < _levelData.GetLength(2); x++)
-            {
-                CreateBlock(_levelData[0, y, x], x, y);
-
-                if (SpeciesKind < _levelData[0, y, x])
-                {
-                    SpeciesKind = _levelData[0, y, x];
-                }
-            }
-        }
-
-        Camera.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
     }
 
     /*`
@@ -243,6 +239,6 @@ public class MapManager : MonoBehaviour
             }
         };
 
-        mapComponent.CreateMap(LevelData);
+        
     }
 }

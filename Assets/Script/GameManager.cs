@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 /// <summary>
 /// 0.wait  1.select  2.move  3.fail
@@ -52,7 +50,7 @@ public class GameManager : MonoBehaviour
                 {
                     Vector2Int diff = _pos - selecBlockPos;
 
-                    //인접한 블럭 클릭 시(미구현)
+                    //인접한 블럭 클릭 시
                     if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) == 1)
                     {
                         mapManager.BlockSwap(selecBlockPos, diff);
@@ -76,14 +74,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void MatchResult(bool _result)
+    public void MatchResult(bool _result, Vector2Int _targetBlock, Vector2Int _dir)
     {
         ChangeGameState(GameState.move);
-
-        isMatched = _result;
     }
-
-
+    
 
     void Update()
     {
