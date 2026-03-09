@@ -14,14 +14,15 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
-    public MouseManager mouseManager;
-    public MapManager mapManager;
- 
+    [SerializeField] private MouseManager mouseManager;
+    [SerializeField] private BlockManager blockManager;
+    [SerializeField] private BoardManager boardManager;
+
     private GameState gameState;
 
     private Vector2Int selecBlockPos = new Vector2Int(-1, -1);      //초기값
     private bool isMatched;
-
+ 
     /// <summary>
     /// 0.wait  1.select  2.move  3.destroy  4.fail
     /// </summary>
@@ -53,7 +54,7 @@ public class GameManager : MonoBehaviour
                     //인접한 블럭 클릭 시
                     if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) == 1)
                     {
-                        mapManager.BlockSwap(selecBlockPos, diff);
+                        boardManager.BlockSwap(selecBlockPos, diff);
                     }
 
                     //먼 거리 -> 재 선택
@@ -74,9 +75,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void MatchResult(bool _result, Vector2Int _targetBlock, Vector2Int _dir)
+    public void MatchResult(bool _result, Vector2Int _block1, Vector2Int _block2)
     {
         ChangeGameState(GameState.move);
+        GameObject[,] boardData = boardManager.BoardData;
+
+        if (_result)
+        {
+            blockManager.playSwap(boardData[_block1.y, _block1.x], boardData[_block2.y, _block2.x]);
+        }
+        else
+        {
+            blockManager.playSnapBack(boardData[_block1.y, _block1.x], boardData[_block2.y, _block2.x]);
+        }
     }
     
 
@@ -90,7 +101,6 @@ public class GameManager : MonoBehaviour
                     mouseManager.BlcokSelect();
                     return;
                 }
-
             case GameState.move:
                 {
                     return;

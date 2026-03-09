@@ -7,7 +7,7 @@ public class BlockMove : MonoBehaviour
     private Vector3 startPos;
     private Vector3 targetPos;
 
-    public BlockAnimState animState = BlockAnimState.wait; 
+    private BlockAnimState animState = BlockAnimState.wait; 
 
     public enum BlockAnimState
     {
@@ -28,7 +28,7 @@ public class BlockMove : MonoBehaviour
         {
             case BlockAnimState.Swaping:
                 {
-                    MoveBlock();
+                    Swaping();
                     return;
                 }
             case BlockAnimState.Snapback:
@@ -47,24 +47,23 @@ public class BlockMove : MonoBehaviour
     /// <summary>
     /// 0 = idle 1 = matched 2 = notMatched 3 = falling
     /// </summary> 
-    public void MoveStart(int _moveType, int[] _targetPos)
+    public void MoveStart(BlockAnimState _moveType, Vector2 _targetBoardPos)
     {
-        animState = (BlockAnimState)_moveType;
-
-        if(_moveType == 0)
+        if(_moveType == BlockAnimState.Swaping)
         { moveFrame = 24; }
 
-        else if (_moveType == 1)
+        else if (_moveType == BlockAnimState.Snapback)
         { moveFrame = 16; }
 
         else
         { moveFrame = 0; }
 
         startPos = transform.position;
-        targetPos = new Vector3(_targetPos[0], -_targetPos[1]);
+        targetPos = new Vector3(_targetBoardPos[0], -_targetBoardPos[1]);
+        animState = _moveType;
     }
 
-    private void MoveBlock()
+    private void Swaping()
     {
         if (nowFrame < moveFrame)
         {
@@ -72,11 +71,13 @@ public class BlockMove : MonoBehaviour
             nowFrame++;
             return;
         }
+        Debug.Log(nowFrame);
 
         // 마지막 위치 보정
         transform.localPosition = targetPos;
         animState = BlockAnimState.wait;
         nowFrame = 0.0f;
+        GetComponentInParent<BlockManager>().blockMoveEnd();
         return;
     }
 
@@ -96,10 +97,12 @@ public class BlockMove : MonoBehaviour
             nowFrame++;
             return;
         }
+        Debug.Log(nowFrame);
 
         transform.position = startPos;
         animState = BlockAnimState.wait;
         nowFrame = 0.0f;
+        GetComponentInParent<BlockManager>().blockMoveEnd();
         return;
     }
 

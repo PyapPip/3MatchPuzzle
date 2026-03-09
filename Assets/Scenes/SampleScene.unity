@@ -242,14 +242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d05f81b0dc40970439a859fac6c6b7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Shapes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   gameManager: {fileID: 2058106821}
-  blcokManager: {fileID: 0}
   Camera: {fileID: 519420028}
 --- !u!4 &797188083
 Transform:
@@ -278,6 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dee7bd80272c031498bf70856d0016f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlockMabager
+  gameManager: {fileID: 2058106821}
   Shapes:
   - {fileID: 4238355767407492648, guid: 743b0f188a24b6b4e85384cc9e1e794b, type: 3}
   - {fileID: 2485113073056696291, guid: 5f678b8ddf093124780d321e1cb1147d, type: 3}
@@ -422,7 +416,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   mouseManager: {fileID: 1219802962}
-  mapManager: {fileID: 797188082}
+  blockManager: {fileID: 797188084}
+  boardManager: {fileID: 797188082}
 --- !u!4 &2058106822
 Transform:
   m_ObjectHideFlags: 0

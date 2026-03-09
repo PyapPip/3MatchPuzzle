@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class MapManager : MonoBehaviour
+public class BoardManager : MonoBehaviour
 {
-    public GameObject[] Shapes = new GameObject[5]; //5가지 종류의 블럭을 담아둔 배열
-    public GameManager gameManager;
-    public GameObject Camera;
+    public GameObject[,] BoardData;
 
-    private GameObject[,] MapData;
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private GameObject Camera;
+
     private List<Vector2Int> NeedFillPos;
     private int SpeciesKind;
     private int[,,] LevelData = new int[1, 5, 5];
@@ -16,17 +16,17 @@ public class MapManager : MonoBehaviour
     public void BlockSwap(Vector2Int _targetBlockPos, Vector2Int _dir)
     {
         
-        int[,] virtualMap = new int[MapData.GetLength(1), MapData.GetLength(0)];
-        int[,] matchData = new int[MapData.GetLength(1), MapData.GetLength(0)];
+        int[,] virtualMap = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
+        int[,] matchData = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
 
-        Block selectBlock = MapData[_targetBlockPos.y, _targetBlockPos.x].GetComponent<Block>();
-        Block targetBlock = MapData[_targetBlockPos.y + _dir.y, _targetBlockPos.x + _dir.x].GetComponent<Block>();
+        Block selectBlock = BoardData[_targetBlockPos.y, _targetBlockPos.x].GetComponent<Block>();
+        Block targetBlock = BoardData[_targetBlockPos.y + _dir.y, _targetBlockPos.x + _dir.x].GetComponent<Block>();
 
         for (int x = 0; x < virtualMap.GetLength(0); x++)
         {
             for (int y = 0; y < virtualMap.GetLength(1); y++)
             {
-                virtualMap[x, y] = MapData[y, x].GetComponent<Block>().species;
+                virtualMap[x, y] = BoardData[y, x].GetComponent<Block>().species;
             }
         }
 
@@ -36,14 +36,14 @@ public class MapManager : MonoBehaviour
         NeedFillPos = MatchChack(virtualMap);
 
         //매치 되지 않았다면
-        if(NeedFillPos.Count == 0)
+        if (NeedFillPos.Count == 0)
         {
-            gameManager.MatchResult(false, _targetBlockPos, _dir);
+            gameManager.MatchResult(false, _targetBlockPos, _targetBlockPos + _dir);
         }
 
         else
         {
-            gameManager.MatchResult(true, _targetBlockPos, _dir);
+            gameManager.MatchResult(true, _targetBlockPos, _targetBlockPos + _dir);
         }
     }
 
@@ -82,7 +82,7 @@ public class MapManager : MonoBehaviour
                     }
                 }
             }
-        }
+        } 
 
         for (int x = 0; x < _virtualMap.GetLength(0); x++)
         {
@@ -119,13 +119,13 @@ public class MapManager : MonoBehaviour
     {
         BlockManager blcokManager = this.gameObject.GetComponent<BlockManager>();
 
-        MapData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
+        BoardData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
 
         for (int y = 0; y < _levelData.GetLength(1); y++)
         {
             for (int x = 0; x < _levelData.GetLength(2); x++)
             {
-                MapData[y, x] = blcokManager.CreateBlock(_levelData[0, y, x], x, y);
+                BoardData[y, x] = blcokManager.CreateBlock(_levelData[0, y, x], x, y);
 
                 if (SpeciesKind < _levelData[0, y, x])
                 {
@@ -147,15 +147,15 @@ public class MapManager : MonoBehaviour
         {
             for (int y = NeedFillPos[i].y; y >= 0; y--)
             {
-                MapData[y, NeedFillPos[i].x].GetComponent<Block>().fall++;
+                BoardData[y, NeedFillPos[i].x].GetComponent<Block>().fall++;
             }
         }
 
-        for (int y = 0; y < MapData.GetLength(0); y++)
+        for (int y = 0; y < BoardData.GetLength(0); y++)
         {
-            for (int x = 0; x < MapData.GetLength(1); x++)
+            for (int x = 0; x < BoardData.GetLength(1); x++)
             {
-                if (MapData[y, x].GetComponent<Block>().fall != 0)
+                if (BoardData[y, x].GetComponent<Block>().fall != 0)
                 {
                     //애니메이션 재생
                 }
@@ -239,6 +239,6 @@ public class MapManager : MonoBehaviour
             }
         };
 
-        
+        CreateMap(LevelData);
     }
 }
