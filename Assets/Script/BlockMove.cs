@@ -47,7 +47,7 @@ public class BlockMove : MonoBehaviour
     /// <summary>
     /// 0 = idle 1 = matched 2 = notMatched 3 = falling
     /// </summary> 
-    public void MoveStart(BlockAnimState _moveType, Vector2 _targetBoardPos)
+    public void MoveStart(BlockAnimState _moveType, Vector2 _targetPos)
     {
         if(_moveType == BlockAnimState.Swaping)
         { moveFrame = 24; }
@@ -59,7 +59,7 @@ public class BlockMove : MonoBehaviour
         { moveFrame = 0; }
 
         startPos = transform.position;
-        targetPos = new Vector3(_targetBoardPos[0], -_targetBoardPos[1]);
+        targetPos = new Vector3(_targetPos[0], _targetPos[1]);
         animState = _moveType;
     }
 
@@ -71,7 +71,8 @@ public class BlockMove : MonoBehaviour
             nowFrame++;
             return;
         }
-        Debug.Log(nowFrame);
+
+        //Debug.Log(nowFrame);
 
         // 마지막 위치 보정
         transform.localPosition = targetPos;
@@ -97,7 +98,8 @@ public class BlockMove : MonoBehaviour
             nowFrame++;
             return;
         }
-        Debug.Log(nowFrame);
+        
+        //Debug.Log(nowFrame);
 
         transform.position = startPos;
         animState = BlockAnimState.wait;

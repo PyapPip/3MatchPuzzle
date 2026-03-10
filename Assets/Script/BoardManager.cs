@@ -50,7 +50,7 @@ public class BoardManager : MonoBehaviour
     //매치 확인
     List<Vector2Int> MatchChack(int[,] _virtualMap)
     {
-        int count = 1;
+        int count;
         int prevShapes = -1;
 
         List<Vector2Int> matchedBlocks = new List<Vector2Int>();
@@ -71,10 +71,10 @@ public class BoardManager : MonoBehaviour
                 else
                 {
                     prevShapes = _virtualMap[x, y];
-                    count = 0;
+                    count = 1;
                 }
 
-                if (count > 2)
+                if (count >= 3)
                 {
                     for (int i = 0; i < count; i++)
                     {
@@ -86,7 +86,7 @@ public class BoardManager : MonoBehaviour
 
         for (int x = 0; x < _virtualMap.GetLength(0); x++)
         {
-            count = 1;  //새 행을 검사할때 마다 초기화
+            count = 0;  //새 행을 검사할때 마다 초기화
             prevShapes = -1;
 
             for (int y = 0; y < _virtualMap.GetLength(1); y++)
@@ -99,10 +99,10 @@ public class BoardManager : MonoBehaviour
                 else
                 {
                     prevShapes = _virtualMap[x, y];
-                    count = 0;
+                    count = 1;
                 }
 
-                if (count > 2)
+                if (count >= 3)
                 {
                     for (int i = 0; i < count; i++)
                     {
@@ -140,7 +140,7 @@ public class BoardManager : MonoBehaviour
     //블럭 리스폰
     public void BlockReSpawn()
     {
-        int s = UnityEngine.Random.Range(0, SpeciesKind);
+        int s = Random.Range(0, SpeciesKind);
 
         //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
         for (int i = 0; i < NeedFillPos.Count; i++)
