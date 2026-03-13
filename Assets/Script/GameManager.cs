@@ -9,7 +9,9 @@ public enum GameState
     select,
     move,
     destroy,
-    fall
+    fall,
+    respawn,
+    check
 }
 
 public class GameManager : MonoBehaviour
@@ -18,55 +20,76 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BlockManager blockManager;
     [SerializeField] private BoardManager boardManager;
 
-    private GameState gameState;
+    private GameState GameState;
 
-    private Vector2Int selecBlockPos = new Vector2Int(-1, -1);      //초기값
+    private Vector2Int SelecBlockPos = new Vector2Int(-1, -1);      //초기값
     private bool isMatched;
- 
+
     /// <summary>
-    /// 0.wait  1.select  2.move  3.destroy  4.fail
+    ///  wait, select, move, destroy, fall, respawn, check
     /// </summary>
     public void ChangeGameState(GameState _state)
     {
-        gameState = _state;
-    }
+        GameState = _state;
 
+        //Debug.Log(gameState);
+
+        switch (GameState)
+        {
+            case GameState.destroy:
+                {
+
+                    break;
+                }
+            case GameState.fall:
+                {
+
+                    break;
+                }
+            case GameState.check:
+                {
+
+                    break;
+                }
+        }
+    }
+                                      
     public void OnClick(Vector2Int _pos)
     {
-        if (gameState != GameState.wait && gameState != GameState.select)
+        if (GameState != GameState.wait && GameState != GameState.select)
         {
             Debug.Log("OnClick 예외");
             return; 
         }
 
-        switch (gameState)
+        switch (GameState)
         {
             case GameState.wait:
                 {
-                    selecBlockPos = _pos;
+                    SelecBlockPos = _pos;
                     ChangeGameState(GameState.select);
                     return;
                 }
             case GameState.select:
                 {
-                    Vector2Int diff = _pos - selecBlockPos;
+                    Vector2Int diff = _pos - SelecBlockPos;
 
                     //인접한 블럭 클릭 시
                     if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) == 1)
                     {
-                        boardManager.BlockSwap(selecBlockPos, diff);
+                        boardManager.BlockSwap(SelecBlockPos, diff);
                     }
 
                     //먼 거리 -> 재 선택
                     else if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) > 1)
                     {
-                        selecBlockPos = _pos;
+                        SelecBlockPos = _pos;
                     }
 
                     //같은 칸 선택 -> 선택 취소
                     else
                     {
-                        selecBlockPos = new Vector2Int(-1, -1);
+                        SelecBlockPos = new Vector2Int(-1, -1);
                         ChangeGameState(GameState.wait);
                     }
 
@@ -79,8 +102,9 @@ public class GameManager : MonoBehaviour
     {
         ChangeGameState(GameState.move);
         GameObject[,] boardData = boardManager.BoardData;
+        isMatched = _result;
 
-        if (_result)
+        if (isMatched)
         {
             blockManager.playSwap(boardData[_block1.y, _block1.x], boardData[_block2.y, _block2.x]);
         }
@@ -89,26 +113,21 @@ public class GameManager : MonoBehaviour
             blockManager.playSnapBack(boardData[_block1.y, _block1.x], boardData[_block2.y, _block2.x]);
         }
     }
-    
 
-    void Update()
+    public void MoveEnd()
     {
-        switch (gameState)
+        if(isMatched)
         {
-            case GameState.wait:
-            case GameState.select:
-                {
-                    mouseManager.BlcokSelect();
-                    return;
-                }
-            case GameState.move:
-                {
-                    return;
-                }
-            case GameState.fall:
-                {
-                    return;
-                }
+            ChangeGameState(GameState.destroy);
         }
+        else
+        {
+            ChangeGameState(GameState.select);
+        }
+    }
+
+    private void Awake()
+    {
+        Application.targetFrameRate = 60;
     }
 }

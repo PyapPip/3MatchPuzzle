@@ -106,7 +106,7 @@ MapComponent를 boardManager와 BlockManager로 나누어줄 필요가 있음.
 매치 결과에 따라  ㅡ 매치가 아니라면 원래자리로 애니메이션 재생 ㅡ 애니메이션이 끝났음을 전달받으면 다시 셀렉트로.
 	ㄴ 매치가 되면 블럭끼리 자리 바꾸기 애니메이션 재생 ㅡ 애니메이션이 끝났으면 파괴 ㅡ 블럭 재생성 ㅡ 블럭 정렬 ㅡ wait으로 돌아가기.
 
-목표: BlockManager에 매치 결과에 따른 블럭 애니메이션 재생 함수 만들기.
+목표: BlockManager에 매치 결과에 따른 블럭 애니메 이션 재생 함수 만들기.
 이유: 상태머신을 이용해 게임 구현을 하기 위해
 행동: 함수 틀 먼저 만들어두기.
 
@@ -121,8 +121,14 @@ MouseManager(실 좌표)->GameManager(실 좌표)->BoardManager(실 좌표)
 
 MatchChack시 xy 혼용으로 인해 버그 발생.
 
+3/13
+목표: GameManager의 ChangeGameState 함수 흐름 구현하기
+이유: gameState가 바뀌었을때 작동해야하는 기능들을 넣기 위해서.
+행동: fall부터 switch case를 이용해 만들어보자.
+
 FIX LATER
 보드 좌표계의 직관성 (y, x 순서임. 보드의 구성과 생성, 좌표를 이용한 각종 기능들에 수정 필요.)
 block의 x y 변수 -> Vector2dInt 로 변환
 MapManager의 MapData는 함수별로 mapData를 받아 쓰고있다. 그냥 전역변수로 처리하면 안되나?
 MatchChack 의 확인은 GameObject[,] 가 아닌 vectorInt2를 이용하자
+명명 규칙 확립 필요.

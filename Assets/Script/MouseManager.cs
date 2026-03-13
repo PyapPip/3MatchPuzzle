@@ -7,7 +7,7 @@ public class MouseManager : MonoBehaviour
     public GameObject Map;
     public bool isCanClick = true;
 
-    public void BlcokSelect()
+     void Update()
     {
         if (Input.GetMouseButtonUp(0))
         {

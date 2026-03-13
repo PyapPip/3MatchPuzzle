@@ -6,8 +6,7 @@ public class BlockManager : MonoBehaviour
 
     public GameObject[] Shapes = new GameObject[5]; //5가지 종류의 블럭을 담아둔 배열
 
-    private int MoveBlockCount;
-    private bool isMatched;
+    private int moveBlockCount;
 
     public GameObject CreateBlock(int _shapes, int _x, int _y)
     {
@@ -33,34 +32,25 @@ public class BlockManager : MonoBehaviour
 
     public void playSwap(GameObject _block1, GameObject _block2)
     {
-        MoveBlockCount = 2;
+        moveBlockCount = 2;
         _block1.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Swaping, _block2.transform.position);
         _block2.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Swaping, _block1.transform.position);
-        isMatched = true;
     }
 
     public void playSnapBack(GameObject _block1, GameObject _block2)
     {
-        MoveBlockCount = 2;
+        moveBlockCount = 2;
         _block1.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Snapback, _block2.transform.position);
         _block2.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Snapback, _block1.transform.position);
-        isMatched = false;
     }
 
-    public void blockMoveEnd()
+    public void BlockMoveEnd()
     {
-        MoveBlockCount--;
+        moveBlockCount--;
 
-        if(MoveBlockCount <= 0)
+        if (moveBlockCount <= 0)
         {
-            if (isMatched)
-            {
-                gameManager.ChangeGameState(GameState.destroy);
-            }
-            else
-            {
-                gameManager.ChangeGameState(GameState.select);
-            }
+            gameManager.MoveEnd();
         }
     }
 }

@@ -6,11 +6,11 @@ public class BoardManager : MonoBehaviour
     public GameObject[,] BoardData;
 
     [SerializeField] private GameManager gameManager;
-    [SerializeField] private GameObject Camera;
+    [SerializeField] private GameObject cameraObject;
 
-    private List<Vector2Int> NeedFillPos;
-    private int SpeciesKind;
-    private int[,,] LevelData = new int[1, 5, 5];
+    private List<Vector2Int> needFillPos;
+    private int speciesKind;
+    private int[,,] levelData = new int[1, 5, 5];
 
     //블럭 스왑
     public void BlockSwap(Vector2Int _targetBlockPos, Vector2Int _dir)
@@ -33,10 +33,10 @@ public class BoardManager : MonoBehaviour
         (virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y], virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y])
         = (virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y], virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y]);
 
-        NeedFillPos = MatchChack(virtualMap);
+        needFillPos = MatchChack(virtualMap);
 
         //매치 되지 않았다면
-        if (NeedFillPos.Count == 0)
+        if (needFillPos.Count == 0)
         {
             gameManager.MatchResult(false, _targetBlockPos, _targetBlockPos + _dir);
         }
@@ -127,27 +127,27 @@ public class BoardManager : MonoBehaviour
             {
                 BoardData[y, x] = blcokManager.CreateBlock(_levelData[0, y, x], x, y);
 
-                if (SpeciesKind < _levelData[0, y, x])
+                if (speciesKind < _levelData[0, y, x])
                 {
-                    SpeciesKind = _levelData[0, y, x];
+                    speciesKind = _levelData[0, y, x];
                 }
             }
         }
 
-        Camera.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
+        cameraObject.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
     }
 
     //블럭 리스폰
     public void BlockReSpawn()
     {
-        int s = Random.Range(0, SpeciesKind);
+        int s = Random.Range(0, speciesKind);
 
         //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
-        for (int i = 0; i < NeedFillPos.Count; i++)
+        for (int i = 0; i < needFillPos.Count; i++)
         {
-            for (int y = NeedFillPos[i].y; y >= 0; y--)
-            {
-                BoardData[y, NeedFillPos[i].x].GetComponent<Block>().fall++;
+            for (int y = needFillPos[i].y; y >= 0; y--)
+            {  
+                BoardData[y, needFillPos[i].x].GetComponent<Block>().fall++;
             }
         }
 
@@ -219,17 +219,12 @@ public class BoardManager : MonoBehaviour
 
         Debug.Log("ㅋㅋ");
     }
-    */
-
-    private void Awake()
-    {
-        Application.targetFrameRate = 60;
-    }                                                                                                
+    */                                                                                            
 
     void Start()
     {
         // 모듈화 예정
-        LevelData = new int[1, 5, 5]{
+        levelData = new int[1, 5, 5]{
             {
                 { 0, 1, 2, 1, 0},
                 { 1, 2, 0, 2, 3},
@@ -239,6 +234,6 @@ public class BoardManager : MonoBehaviour
             }
         };
 
-        CreateMap(LevelData);
+        CreateMap(levelData);
     }
 }

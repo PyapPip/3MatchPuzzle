@@ -78,7 +78,7 @@ public class BlockMove : MonoBehaviour
         transform.localPosition = targetPos;
         animState = BlockAnimState.wait;
         nowFrame = 0.0f;
-        GetComponentInParent<BlockManager>().blockMoveEnd();
+        GetComponentInParent<BlockManager>().BlockMoveEnd();
         return;
     }
 
@@ -104,7 +104,7 @@ public class BlockMove : MonoBehaviour
         transform.position = startPos;
         animState = BlockAnimState.wait;
         nowFrame = 0.0f;
-        GetComponentInParent<BlockManager>().blockMoveEnd();
+        GetComponentInParent<BlockManager>().BlockMoveEnd();
         return;
     }
 
