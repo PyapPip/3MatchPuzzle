@@ -3,19 +3,20 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-    public GameObject[,] BoardData;
+    public GameObject[,] BoardData; //y x
 
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private BlockManager blockManager;
     [SerializeField] private GameObject cameraObject;
 
-    private List<Vector2Int> needFillPos;
     private int speciesKind;
-    private int[,,] levelData = new int[1, 5, 5];
+    private int[,,] levelData = new int[1, 5, 5];   //단계 y x
+    private bool[,] matchedBlocks;                  //x y
+    private List<Vector2Int> matchedBlockPos;       //x y
 
     //블럭 스왑
     public void BlockSwap(Vector2Int _targetBlockPos, Vector2Int _dir)
     {
-        
         int[,] virtualMap = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
         int[,] matchData = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
 
@@ -33,27 +34,17 @@ public class BoardManager : MonoBehaviour
         (virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y], virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y])
         = (virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y], virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y]);
 
-        needFillPos = MatchChack(virtualMap);
-
-        //매치 되지 않았다면
-        if (needFillPos.Count == 0)
-        {
-            gameManager.MatchResult(false, _targetBlockPos, _targetBlockPos + _dir);
-        }
-
-        else
-        {
-            gameManager.MatchResult(true, _targetBlockPos, _targetBlockPos + _dir);
-        }
+        gameManager.MatchResult(MatchChack(virtualMap), _targetBlockPos, _targetBlockPos + _dir);
     }
 
     //매치 확인
-    List<Vector2Int> MatchChack(int[,] _virtualMap)
+    public bool MatchChack(int[,] _virtualMap)
     {
         int count;
         int prevShapes = -1;
+        bool isMatched = false;
 
-        List<Vector2Int> matchedBlocks = new List<Vector2Int>();
+        matchedBlocks = new bool[BoardData.GetLength(1), BoardData.GetLength(0)];
 
         //xy 검사
         for (int y = 0; y < _virtualMap.GetLength(1); y++)
@@ -76,17 +67,18 @@ public class BoardManager : MonoBehaviour
 
                 if (count >= 3)
                 {
+                    isMatched = true;
                     for (int i = 0; i < count; i++)
                     {
-                        matchedBlocks.Add(new Vector2Int(x - i, y));
+                        matchedBlocks[x - i, y] = true;
                     }
                 }
             }
-        } 
+        }
 
         for (int x = 0; x < _virtualMap.GetLength(0); x++)
         {
-            count = 0;  //새 행을 검사할때 마다 초기화
+            count = 0;  //새 열을 검사할때 마다 초기화
             prevShapes = -1;
 
             for (int y = 0; y < _virtualMap.GetLength(1); y++)
@@ -104,14 +96,48 @@ public class BoardManager : MonoBehaviour
 
                 if (count >= 3)
                 {
+                    isMatched = true;
                     for (int i = 0; i < count; i++)
                     {
-                        matchedBlocks.Add(new Vector2Int(x, y - i));
+                        matchedBlocks[x, y - i] = true;
                     }
                 }
             }
         }
-        return matchedBlocks;
+
+        return isMatched;
+    }
+
+    public void DestroyBlock()
+    {
+        for (int x = 0; x < matchedBlocks.GetLength(0); x++)
+        {
+            for (int y = 0; y < matchedBlocks.GetLength(1); y++)
+            {
+                if (matchedBlocks[x,y])
+                {
+                    matchedBlockPos.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+
+        //매치 되었던 블럭들 파괴
+        for (int i = 0; i < matchedBlockPos.Count; i++)
+        {
+            Destroy(BoardData[matchedBlockPos[i].x, matchedBlockPos[i].y]);
+            BoardData[matchedBlockPos[i].x, matchedBlockPos[i].y] = null;
+        }
+
+        //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
+        for (int i = 0; i < matchedBlockPos.Count; i++)
+        {
+            for (int y = matchedBlockPos[i].y - 1; y >= 0; y--)
+            {
+                BoardData[y, matchedBlockPos[i].x].GetComponent<Block>().fall++;
+            }
+        }
+
+        gameManager.ChangeGameState(GameState.respawn);
     }
 
     //이 주석 아래는 수정 예정
@@ -140,26 +166,9 @@ public class BoardManager : MonoBehaviour
     //블럭 리스폰
     public void BlockReSpawn()
     {
-        int s = Random.Range(0, speciesKind);
-
-        //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
-        for (int i = 0; i < needFillPos.Count; i++)
+        for (int i = 0; i < matchedBlockPos.Count; i++)
         {
-            for (int y = needFillPos[i].y; y >= 0; y--)
-            {  
-                BoardData[y, needFillPos[i].x].GetComponent<Block>().fall++;
-            }
-        }
-
-        for (int y = 0; y < BoardData.GetLength(0); y++)
-        {
-            for (int x = 0; x < BoardData.GetLength(1); x++)
-            {
-                if (BoardData[y, x].GetComponent<Block>().fall != 0)
-                {
-                    //애니메이션 재생
-                }
-            }
+            blockManager.CreateBlock(Random.Range(0, speciesKind), )
         }
     }
 
@@ -219,7 +228,7 @@ public class BoardManager : MonoBehaviour
 
         Debug.Log("ㅋㅋ");
     }
-    */                                                                                            
+    */
 
     void Start()
     {

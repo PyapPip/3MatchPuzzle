@@ -9,8 +9,8 @@ public enum GameState
     select,
     move,
     destroy,
-    fall,
     respawn,
+    fall,
     check
 }
 
@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     ///  wait, select, move, destroy, fall, respawn, check
     /// </summary>
     public void ChangeGameState(GameState _state)
+
     {
         GameState = _state;
 
@@ -37,6 +38,11 @@ public class GameManager : MonoBehaviour
         switch (GameState)
         {
             case GameState.destroy:
+                {
+                    boardManager.DestroyBlock();
+                    break;
+                }
+            case GameState.respawn:
                 {
 
                     break;
