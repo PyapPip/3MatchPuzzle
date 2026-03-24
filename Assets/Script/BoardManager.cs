@@ -12,7 +12,7 @@ public class BoardManager : MonoBehaviour
     private int speciesKind;
     private int[,,] levelData = new int[1, 5, 5];   //단계 y x
     private bool[,] matchedBlocks;                  //x y
-    private List<Vector2Int> matchedBlockPos;       //x y
+    private int[] countMatchedBlock;       //x y
 
     //블럭 스왑
     public void BlockSwap(Vector2Int _targetBlockPos, Vector2Int _dir)
@@ -116,24 +116,24 @@ public class BoardManager : MonoBehaviour
             {
                 if (matchedBlocks[x,y])
                 {
-                    matchedBlockPos.Add(new Vector2Int(x, y));
+                    countMatchedBlock[x]++;
+                    Destroy(BoardData[x, y]);
+                    BoardData[x, y] = null;
+
+                    //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
+                    for (int upperY = y - 1; upperY >= 0; upperY--)
+                    {
+                        if (BoardData[upperY, x] == null)
+                            continue;
+
+                        Block block = BoardData[upperY, x].GetComponent<Block>();
+
+                        if (block != null)
+                        {
+                            block.fall++;
+                        }
+                    }
                 }
-            }
-        }
-
-        //매치 되었던 블럭들 파괴
-        for (int i = 0; i < matchedBlockPos.Count; i++)
-        {
-            Destroy(BoardData[matchedBlockPos[i].x, matchedBlockPos[i].y]);
-            BoardData[matchedBlockPos[i].x, matchedBlockPos[i].y] = null;
-        }
-
-        //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
-        for (int i = 0; i < matchedBlockPos.Count; i++)
-        {
-            for (int y = matchedBlockPos[i].y - 1; y >= 0; y--)
-            {
-                BoardData[y, matchedBlockPos[i].x].GetComponent<Block>().fall++;
             }
         }
 
@@ -146,6 +146,7 @@ public class BoardManager : MonoBehaviour
         BlockManager blcokManager = this.gameObject.GetComponent<BlockManager>();
 
         BoardData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
+        countMatchedBlock = new int[_levelData.GetLength(2)];
 
         for (int y = 0; y < _levelData.GetLength(1); y++)
         {
