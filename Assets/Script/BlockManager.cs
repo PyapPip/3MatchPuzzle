@@ -19,13 +19,14 @@ public class BlockManager : MonoBehaviour
     }
 
     //좌표 지정을 위해 오버라이딩한 함수
-    public GameObject CreateBlock(int _shapes, int _x, int _y, Vector2 _spwonPos)
+    public GameObject CreateBlock(int _shapes, int _x, int _y, int _fall)
     {
         GameObject instance = Instantiate(Shapes[_shapes], this.transform);
         instance.GetComponent<Block>().boardPos.x = _x;
         instance.GetComponent<Block>().boardPos.y = _y;
-        instance.GetComponent<Block>().species = _shapes;
-        instance.transform.position = _spwonPos;
+        instance.GetComponent<Block>().species =    _shapes;
+        instance.GetComponent<Block>().fall =       _fall;
+        instance.transform.position =               new Vector2(_x, -_y);
 
         return instance;
     }
@@ -33,6 +34,7 @@ public class BlockManager : MonoBehaviour
     public void playSwap(GameObject _block1, GameObject _block2)
     {
         moveBlockCount = 2;
+        _block2.pos
         _block1.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Swaping, _block2.transform.position);
         _block2.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Swaping, _block1.transform.position);
     }

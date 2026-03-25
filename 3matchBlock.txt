@@ -126,9 +126,15 @@ MatchChack시 xy 혼용으로 인해 버그 발생.
 이유: gameState가 바뀌었을때 작동해야하는 기능들을 넣기 위해서.
 행동: fall부터 switch case를 이용해 만들어보자.
 
+3/23
+목표: 블럭 리스폰 구현하기
+이유: 이것이 만들어져야 게임의 낙하를 구현할 수 있음. 게임의 거의 모든 요소를 구현했음.
+행동: BlockReSpawn 구현 - 지정된 좌표에 블럭 소환, 목표 위치 저장(fall/boardPos), GameManager에 결과 넘기기
+종료 조건: 각 열의 빈 칸 수와 생성 수가 일치하고, 생성된 블럭들이 모두 목표 칸 정보를 가진다.
+
 FIX LATER
 보드 좌표계의 직관성 (y, x 순서임. 보드의 구성과 생성, 좌표를 이용한 각종 기능들에 수정 필요.)
-block의 x y 변수 -> Vector2dInt 로 변환
+block의 x y 변수 -> Vector2Int 로 변환
 MapManager의 MapData는 함수별로 mapData를 받아 쓰고있다. 그냥 전역변수로 처리하면 안되나?
 MatchChack 의 확인은 GameObject[,] 가 아닌 vectorInt2를 이용하자
 명명 규칙 확립 필요.

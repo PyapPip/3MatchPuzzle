@@ -15,7 +15,7 @@ public class BoardManager : MonoBehaviour
     private int[] countMatchedBlock;       //x y
 
     //블럭 스왑
-    public void BlockSwap(Vector2Int _targetBlockPos, Vector2Int _dir)
+    public void TrySwap(Vector2Int _targetBlockPos, Vector2Int _dir)
     {
         int[,] virtualMap = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
         int[,] matchData = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
@@ -34,7 +34,15 @@ public class BoardManager : MonoBehaviour
         (virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y], virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y])
         = (virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y], virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y]);
 
-        gameManager.MatchResult(MatchChack(virtualMap), _targetBlockPos, _targetBlockPos + _dir);
+        bool matchResult = MatchChack(virtualMap);
+
+        if (matchResult)
+        {
+            (BoardData[selectBlock.boardPos.x, selectBlock.boardPos.y], BoardData[targetBlock.boardPos.x, targetBlock.boardPos.y])
+            = (BoardData[targetBlock.boardPos.x, targetBlock.boardPos.y], BoardData[selectBlock.boardPos.x, selectBlock.boardPos.y]);
+        }
+
+        gameManager.GetMatchResult(matchResult, selectBlock.gameObject, targetBlock.gameObject);
     }
 
     //매치 확인
@@ -117,8 +125,8 @@ public class BoardManager : MonoBehaviour
                 if (matchedBlocks[x,y])
                 {
                     countMatchedBlock[x]++;
-                    Destroy(BoardData[x, y]);
-                    BoardData[x, y] = null;
+                    Destroy(BoardData[y, x]);
+                    BoardData[y, x] = null;
 
                     //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
                     for (int upperY = y - 1; upperY >= 0; upperY--)
@@ -167,9 +175,12 @@ public class BoardManager : MonoBehaviour
     //블럭 리스폰
     public void BlockReSpawn()
     {
-        for (int i = 0; i < matchedBlockPos.Count; i++)
+        for (int i = 0; i < countMatchedBlock.Length; i++)
         {
-            blockManager.CreateBlock(Random.Range(0, speciesKind), )
+            for(int j = 0;  j < countMatchedBlock[i]; j++)
+            {
+                blockManager.CreateBlock(Random.Range(0, speciesKind), i, -j - 1, countMatchedBlock[i] + j + 1);
+            }
         }
     }
 

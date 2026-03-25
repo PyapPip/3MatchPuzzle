@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
                     //인접한 블럭 클릭 시
                     if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) == 1)
                     {
-                        boardManager.BlockSwap(SelecBlockPos, diff);
+                        boardManager.TrySwap(SelecBlockPos, diff);
                     }
 
                     //먼 거리 -> 재 선택
@@ -104,19 +104,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void MatchResult(bool _result, Vector2Int _block1, Vector2Int _block2)
+    public void GetMatchResult(bool _result, GameObject _block1, GameObject _block2)
     {
         ChangeGameState(GameState.move);
-        GameObject[,] boardData = boardManager.BoardData;
         isMatched = _result;
 
         if (isMatched)
         {
-            blockManager.playSwap(boardData[_block1.y, _block1.x], boardData[_block2.y, _block2.x]);
+            blockManager.playSwap(_block1, _block2);
         }
         else
         {
-            blockManager.playSnapBack(boardData[_block1.y, _block1.x], boardData[_block2.y, _block2.x]);
+            blockManager.playSnapBack(_block1, _block2);
         }
     }
 
