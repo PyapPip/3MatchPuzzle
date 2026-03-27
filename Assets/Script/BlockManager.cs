@@ -34,7 +34,10 @@ public class BlockManager : MonoBehaviour
     public void playSwap(GameObject _block1, GameObject _block2)
     {
         moveBlockCount = 2;
-        _block2.pos
+
+        (_block1.GetComponent<Block>().boardPos, _block2.GetComponent<Block>().boardPos) =
+            (_block2.GetComponent<Block>().boardPos, _block1.GetComponent<Block>().boardPos);
+
         _block1.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Swaping, _block2.transform.position);
         _block2.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Swaping, _block1.transform.position);
     }

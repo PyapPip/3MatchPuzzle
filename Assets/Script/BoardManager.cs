@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.Android.Gradle;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
@@ -127,6 +128,8 @@ public class BoardManager : MonoBehaviour
                     countMatchedBlock[x]++;
                     Destroy(BoardData[y, x]);
                     BoardData[y, x] = null;
+
+                    Debug.Log("X = " + x + "  Y = " + y);
 
                     //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
                     for (int upperY = y - 1; upperY >= 0; upperY--)
