@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Unity.Android.Gradle;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
@@ -16,13 +15,13 @@ public class BoardManager : MonoBehaviour
     private int[] countMatchedBlock;       //x y
 
     //블럭 스왑
-    public void TrySwap(Vector2Int _targetBlockPos, Vector2Int _dir)
+    public void TrySwap(Vector2Int _selectBlockPos, Vector2Int _dir)
     {
         int[,] virtualMap = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
         int[,] matchData = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
 
-        Block selectBlock = BoardData[_targetBlockPos.y, _targetBlockPos.x].GetComponent<Block>();
-        Block targetBlock = BoardData[_targetBlockPos.y + _dir.y, _targetBlockPos.x + _dir.x].GetComponent<Block>();
+        Vector2Int selectBlock = _selectBlockPos;
+        Vector2Int targetBlock = _selectBlockPos + _dir;
 
         for (int x = 0; x < virtualMap.GetLength(0); x++)
         {
@@ -32,18 +31,18 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        (virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y], virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y])
-        = (virtualMap[targetBlock.boardPos.x, targetBlock.boardPos.y], virtualMap[selectBlock.boardPos.x, selectBlock.boardPos.y]);
+        (virtualMap[selectBlock.x, selectBlock.y], virtualMap[targetBlock.x, targetBlock.y])
+        = (virtualMap[targetBlock.x, targetBlock.y], virtualMap[selectBlock.x, selectBlock.y]);
 
         bool matchResult = MatchChack(virtualMap);
 
         if (matchResult)
         {
-            (BoardData[selectBlock.boardPos.x, selectBlock.boardPos.y], BoardData[targetBlock.boardPos.x, targetBlock.boardPos.y])
-            = (BoardData[targetBlock.boardPos.x, targetBlock.boardPos.y], BoardData[selectBlock.boardPos.x, selectBlock.boardPos.y]);
+            (BoardData[selectBlock.y, selectBlock.x], BoardData[targetBlock.y, targetBlock.x])
+            = (BoardData[targetBlock.y, targetBlock.x], BoardData[selectBlock.y, selectBlock.x]);
         }
 
-        gameManager.GetMatchResult(matchResult, selectBlock.gameObject, targetBlock.gameObject);
+        gameManager.GetMatchResult(matchResult, BoardData[selectBlock.y, selectBlock.x], BoardData[targetBlock.y, targetBlock.x]);
     }
 
     //매치 확인
