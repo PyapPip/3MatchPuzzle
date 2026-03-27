@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
                 }
             case GameState.respawn:
                 {
-
+                    boardManager.BlockReSpawn();
                     break;
                 }
             case GameState.fall:

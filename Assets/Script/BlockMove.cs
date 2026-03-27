@@ -50,10 +50,10 @@ public class BlockMove : MonoBehaviour
     public void MoveStart(BlockAnimState _moveType, Vector2 _targetPos)
     {
         if(_moveType == BlockAnimState.Swaping)
-        { moveFrame = 24; }
+        { moveFrame = 16; }
 
         else if (_moveType == BlockAnimState.Snapback)
-        { moveFrame = 16; }
+        { moveFrame = 24; }
 
         else
         { moveFrame = 0; }
