@@ -135,7 +135,7 @@ public class BoardManager : MonoBehaviour
                     {
                         if (BoardData[upperY, x] == null)
                             continue;
-
+                        
                         Block block = BoardData[upperY, x].GetComponent<Block>();
 
                         if (block != null)
@@ -174,7 +174,6 @@ public class BoardManager : MonoBehaviour
         cameraObject.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
     }
 
-    //블럭 리스폰
     public void BlockReSpawn()
     {
         for (int i = 0; i < countMatchedBlock.Length; i++)
@@ -184,6 +183,25 @@ public class BoardManager : MonoBehaviour
                 blockManager.CreateBlock(Random.Range(0, speciesKind), i, -j - 1, countMatchedBlock[i] + j + 1);
             }
         }
+    }
+
+    public List<GameObject> FallBlockList()
+    {
+        List<GameObject> fallBlocks = new List<GameObject>();
+
+        for (int y = 0; y < BoardData.GetLength(0); y++)
+        {
+            for (int x = 0; x < BoardData.GetLength(1); x++)
+            {
+                GameObject block = BoardData[y, x];
+                if(block.GetComponent<Block>().fall > 0)
+                {
+                    fallBlocks.Add(block);
+                }
+            }
+        }
+
+        return fallBlocks;
     }
 
     /*`

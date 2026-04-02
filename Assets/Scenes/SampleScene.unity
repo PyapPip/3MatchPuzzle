@@ -243,7 +243,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 2058106821}
-  Camera: {fileID: 519420028}
+  blockManager: {fileID: 797188084}
+  cameraObject: {fileID: 519420028}
 --- !u!4 &797188083
 Transform:
   m_ObjectHideFlags: 0
