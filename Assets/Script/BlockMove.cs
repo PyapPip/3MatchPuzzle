@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BlockMove : MonoBehaviour
 {
-    private int moveFrame = 0;                 // 이동하는 데 걸리는 프레임
+    private int   moveFrame = 0;                 // 이동하는 데 걸리는 프레임
     private float nowFrame = 0.0f;              // 현재 프레임
     private Vector3 startPos;
     private Vector3 targetPos;
@@ -14,7 +14,7 @@ public class BlockMove : MonoBehaviour
         wait,
         Swaping,
         Snapback,
-        Falling
+        Fall
         //,Destroyed  
     }
 
@@ -36,7 +36,7 @@ public class BlockMove : MonoBehaviour
                     Snapback();
                     return;
                 }
-            case BlockAnimState.Falling:
+            case BlockAnimState.Fall:
                 {
                     fall();
                     return;
@@ -47,7 +47,7 @@ public class BlockMove : MonoBehaviour
     /// <summary>
     /// 0 = idle 1 = matched 2 = notMatched 3 = falling
     /// </summary> 
-    public void MoveStart(BlockAnimState _moveType, Vector2 _targetPos)
+    public void MovePlay(BlockAnimState _moveType, Vector2 _targetPos)
     {
         if(_moveType == BlockAnimState.Swaping)
         { moveFrame = 16; }
@@ -75,7 +75,7 @@ public class BlockMove : MonoBehaviour
         //Debug.Log(nowFrame);
 
         // 마지막 위치 보정
-        transform.localPosition = targetPos;
+        transform.position = targetPos;
         animState = BlockAnimState.wait;
         nowFrame = 0.0f;
         GetComponentInParent<BlockManager>().BlockMoveEnd();
@@ -110,6 +110,17 @@ public class BlockMove : MonoBehaviour
 
     private void fall()
     {
+        if(this.transform.position != targetPos)
+        {
+            transform.position = Vector3.MoveTowards(
+                transform.position, targetPos, Time.deltaTime
+                );
+            return;
+        }
+
+        GetComponentInParent<BlockManager>().BlockMoveEnd();
+        animState = BlockAnimState.wait; //check 만들어서 적용 필요
+        return;
         //시작지점 -> 가속도 -> 더해졌을때 목표지점보다 클때 목표지점으로 지정
     }
 }

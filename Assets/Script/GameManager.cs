@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BlockManager blockManager;
     [SerializeField] private BoardManager boardManager;
 
-    private GameState GameState;
+    private GameState gameState;
 
     private Vector2Int SelecBlockPos = new Vector2Int(-1, -1);      //초기값
     private bool isMatched;
@@ -29,13 +30,12 @@ public class GameManager : MonoBehaviour
     ///  wait, select, move, destroy, fall, respawn, check
     /// </summary>
     public void ChangeGameState(GameState _state)
-
     {
-        GameState = _state;
+        gameState = _state;
 
         //Debug.Log(gameState);
 
-        switch (GameState)
+        switch (gameState)
         {
             case GameState.destroy:
                 {
@@ -49,6 +49,15 @@ public class GameManager : MonoBehaviour
                 }
             case GameState.fall:
                 {
+                    List<GameObject> fallBlocks = new List<GameObject>();
+                    fallBlocks = boardManager.FallBlockList();
+
+                    for (int i = 0; i < fallBlocks.Count; i++)
+                    {
+                        Vector2 targetPos = fallBlocks[i].GetComponent<Block>().boardPos;
+                        targetPos.y -= fallBlocks[i].GetComponent<Block>().fall;
+                        fallBlocks[i].GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Fall, targetPos);
+                    }
 
                     break;
                 }
@@ -62,13 +71,13 @@ public class GameManager : MonoBehaviour
                                       
     public void OnClick(Vector2Int _pos)
     {
-        if (GameState != GameState.wait && GameState != GameState.select)
+        if (gameState != GameState.wait && gameState != GameState.select)
         {
             Debug.Log("OnClick 예외");
             return; 
         }
 
-        switch (GameState)
+        switch (gameState)
         {
             case GameState.wait:
                 {

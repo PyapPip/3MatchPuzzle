@@ -180,7 +180,7 @@ public class BoardManager : MonoBehaviour
         {
             for(int j = 0;  j < countMatchedBlock[i]; j++)
             {
-                blockManager.CreateBlock(Random.Range(0, speciesKind), i, -j - 1, countMatchedBlock[i] + j + 1);
+                blockManager.CreateBlock(Random.Range(0, speciesKind), i, -j - 1, countMatchedBlock[i] + j);
             }
         }
     }

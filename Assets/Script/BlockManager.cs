@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BlockManager : MonoBehaviour
@@ -22,11 +23,10 @@ public class BlockManager : MonoBehaviour
     public GameObject CreateBlock(int _shapes, int _x, int _y, int _fall)
     {
         GameObject instance = Instantiate(Shapes[_shapes], this.transform);
-        instance.GetComponent<Block>().boardPos.x = _x;
-        instance.GetComponent<Block>().boardPos.y = _y;
-        instance.GetComponent<Block>().species =    _shapes;
-        instance.GetComponent<Block>().fall =       _fall;
-        instance.transform.position =               new Vector2(_x, -_y);
+        instance.GetComponent<Block>().boardPos = new Vector2Int(_x, _y);
+        instance.GetComponent<Block>().species = _shapes;
+        instance.GetComponent<Block>().fall = _fall;
+        instance.transform.position = new Vector2(_x, -_y);
 
         return instance;
     }
@@ -38,15 +38,23 @@ public class BlockManager : MonoBehaviour
         (_block1.GetComponent<Block>().boardPos, _block2.GetComponent<Block>().boardPos) =
             (_block2.GetComponent<Block>().boardPos, _block1.GetComponent<Block>().boardPos);
 
-        _block1.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Swaping, _block2.transform.position);
-        _block2.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Swaping, _block1.transform.position);
+        _block1.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Swaping, _block2.transform.position);
+        _block2.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Swaping, _block1.transform.position);
     }
 
     public void playSnapBack(GameObject _block1, GameObject _block2)
     {
         moveBlockCount = 2;
-        _block1.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Snapback, _block2.transform.position);
-        _block2.GetComponent<BlockMove>().MoveStart(BlockMove.BlockAnimState.Snapback, _block1.transform.position);
+        _block1.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Snapback, _block2.transform.position);
+        _block2.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Snapback, _block1.transform.position);
+    }
+
+    public void playFall(List<GameObject> _fallBlockList)
+    {
+        for(int i = 0; i < _fallBlockList.Count; i++)
+        {
+
+        }
     }
 
     public void BlockMoveEnd()
