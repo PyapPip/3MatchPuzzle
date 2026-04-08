@@ -51,9 +51,11 @@ public class BlockManager : MonoBehaviour
 
     public void playFall(List<GameObject> _fallBlockList)
     {
-        for(int i = 0; i < _fallBlockList.Count; i++)
+        for (int i = 0; i < _fallBlockList.Count; i++)
         {
-
+            Vector2 targetPos = _fallBlockList[i].GetComponent<Block>().boardPos;
+            targetPos.y -= _fallBlockList[i].GetComponent<Block>().fall;
+            _fallBlockList[i].GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Fall, targetPos);
         }
     }
 

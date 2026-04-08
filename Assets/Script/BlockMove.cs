@@ -113,7 +113,7 @@ public class BlockMove : MonoBehaviour
         if(this.transform.position != targetPos)
         {
             transform.position = Vector3.MoveTowards(
-                transform.position, targetPos, Time.deltaTime
+                transform.position, targetPos, Time.deltaTime*1
                 );
             return;
         }

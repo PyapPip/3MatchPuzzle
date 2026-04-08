@@ -183,6 +183,8 @@ public class BoardManager : MonoBehaviour
                 blockManager.CreateBlock(Random.Range(0, speciesKind), i, -j - 1, countMatchedBlock[i] + j);
             }
         }
+
+        gameManager.ChangeGameState(GameState.fall);
     }
 
     public List<GameObject> FallBlockList()
@@ -194,6 +196,7 @@ public class BoardManager : MonoBehaviour
             for (int x = 0; x < BoardData.GetLength(1); x++)
             {
                 GameObject block = BoardData[y, x];
+                //널 참조
                 if(block.GetComponent<Block>().fall > 0)
                 {
                     fallBlocks.Add(block);

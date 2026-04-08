@@ -49,16 +49,7 @@ public class GameManager : MonoBehaviour
                 }
             case GameState.fall:
                 {
-                    List<GameObject> fallBlocks = new List<GameObject>();
-                    fallBlocks = boardManager.FallBlockList();
-
-                    for (int i = 0; i < fallBlocks.Count; i++)
-                    {
-                        Vector2 targetPos = fallBlocks[i].GetComponent<Block>().boardPos;
-                        targetPos.y -= fallBlocks[i].GetComponent<Block>().fall;
-                        fallBlocks[i].GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Fall, targetPos);
-                    }
-
+                    blockManager.playFall(boardManager.FallBlockList());
                     break;
                 }
             case GameState.check:
