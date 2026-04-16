@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 0.wait  1.select  2.move  3.fail
+/// 0.wait 1.select 2.move 3.destroy 4.respawn 5.fall 6.check
 /// </summary>
 public enum GameState
 {
@@ -21,9 +21,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BlockManager blockManager;
     [SerializeField] private BoardManager boardManager;
 
-    private GameState gameState;
+    [SerializeField] private GameState gameState;
 
-    private Vector2Int SelecBlockPos = new Vector2Int(-1, -1);      //초기값
+    private Vector2Int SelectBlockPos = new Vector2Int(-1, -1);      //초기값
     private bool isMatched;
 
     /// <summary>
@@ -44,12 +44,7 @@ public class GameManager : MonoBehaviour
                 }
             case GameState.respawn:
                 {
-                    boardManager.BlockReSpawn();
-                    break;
-                }
-            case GameState.fall:
-                {
-                    blockManager.playFall(boardManager.FallBlockList());
+                    blockManager.playFall(boardManager.BlockReSpawn());
                     break;
                 }
             case GameState.check:
@@ -72,30 +67,30 @@ public class GameManager : MonoBehaviour
         {
             case GameState.wait:
                 {
-                    SelecBlockPos = _pos;
+                    SelectBlockPos = _pos;
                     ChangeGameState(GameState.select);
                     return;
                 }
             case GameState.select:
                 {
-                    Vector2Int diff = _pos - SelecBlockPos;
+                    Vector2Int diff = _pos - SelectBlockPos;
 
                     //인접한 블럭 클릭 시
                     if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) == 1)
                     {
-                        boardManager.TrySwap(SelecBlockPos, diff);
+                        boardManager.TrySwap(SelectBlockPos, diff);
                     }
 
                     //먼 거리 -> 재 선택
                     else if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) > 1)
                     {
-                        SelecBlockPos = _pos;
+                        SelectBlockPos = _pos;
                     }
 
                     //같은 칸 선택 -> 선택 취소
                     else
                     {
-                        SelecBlockPos = new Vector2Int(-1, -1);
+                        SelectBlockPos = new Vector2Int(-1, -1);
                         ChangeGameState(GameState.wait);
                     }
 
@@ -121,14 +116,29 @@ public class GameManager : MonoBehaviour
 
     public void MoveEnd()
     {
-        if(isMatched)
+        if(gameState == GameState.move)
         {
-            ChangeGameState(GameState.destroy);
+            if (isMatched)
+            {
+                ChangeGameState(GameState.destroy);
+            }
+            else
+            {
+                ChangeGameState(GameState.select);
+            }
         }
-        else
+
+        if (gameState == GameState.fall)
         {
-            ChangeGameState(GameState.select);
+            ChangeGameState(GameState.check);
         }
+    }
+
+    public void CycleEndInit()
+    {
+        ChangeGameState(GameState.wait);
+        SelectBlockPos = new Vector2Int(-1, -1);
+        isMatched = false;
     }
 
     private void Awake()

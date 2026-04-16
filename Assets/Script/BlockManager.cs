@@ -7,7 +7,7 @@ public class BlockManager : MonoBehaviour
 
     public GameObject[] Shapes = new GameObject[5]; //5가지 종류의 블럭을 담아둔 배열
 
-    private int moveBlockCount;
+    [SerializeField] private int moveBlockCount;
 
     public GameObject CreateBlock(int _shapes, int _x, int _y)
     {
@@ -54,7 +54,7 @@ public class BlockManager : MonoBehaviour
         for (int i = 0; i < _fallBlockList.Count; i++)
         {
             Vector2 targetPos = _fallBlockList[i].GetComponent<Block>().boardPos;
-            targetPos.y -= _fallBlockList[i].GetComponent<Block>().fall;
+            targetPos.y = -targetPos.y - _fallBlockList[i].GetComponent<Block>().fall;
             _fallBlockList[i].GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Fall, targetPos);
         }
     }

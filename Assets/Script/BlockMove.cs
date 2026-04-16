@@ -4,6 +4,7 @@ public class BlockMove : MonoBehaviour
 {
     private int   moveFrame = 0;                 // 이동하는 데 걸리는 프레임
     private float nowFrame = 0.0f;              // 현재 프레임
+    private float moveSpeed = 0.0f;
     private Vector3 startPos;
     private Vector3 targetPos;
 
@@ -112,15 +113,19 @@ public class BlockMove : MonoBehaviour
     {
         if(this.transform.position != targetPos)
         {
-            transform.position = Vector3.MoveTowards(
-                transform.position, targetPos, Time.deltaTime*1
-                );
+            moveSpeed += 5;
+
+            if (moveSpeed > 5)
+            {
+                moveSpeed = 5;
+            }
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, Time.deltaTime * moveSpeed);
             return;
         }
 
-        GetComponentInParent<BlockManager>().BlockMoveEnd();
         animState = BlockAnimState.wait; //check 만들어서 적용 필요
+        moveSpeed = 0;
+        GetComponentInParent<BlockManager>().BlockMoveEnd();
         return;
-        //시작지점 -> 가속도 -> 더해졌을때 목표지점보다 클때 목표지점으로 지정
     }
 }

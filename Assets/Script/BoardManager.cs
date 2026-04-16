@@ -34,7 +34,7 @@ public class BoardManager : MonoBehaviour
         (virtualMap[selectBlock.x, selectBlock.y], virtualMap[targetBlock.x, targetBlock.y])
         = (virtualMap[targetBlock.x, targetBlock.y], virtualMap[selectBlock.x, selectBlock.y]);
 
-        bool matchResult = MatchChack(virtualMap);
+        bool matchResult = MatchCheck(virtualMap);
 
         if (matchResult)
         {
@@ -46,7 +46,7 @@ public class BoardManager : MonoBehaviour
     }
 
     //매치 확인
-    public bool MatchChack(int[,] _virtualMap)
+    public bool MatchCheck(int[,] _virtualMap)
     {
         int count;
         int prevShapes = -1;
@@ -153,8 +153,6 @@ public class BoardManager : MonoBehaviour
     //이 주석 아래는 수정 예정
     public void CreateMap(int[,,] _levelData)
     {
-        BlockManager blcokManager = this.gameObject.GetComponent<BlockManager>();
-
         BoardData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
         countMatchedBlock = new int[_levelData.GetLength(2)];
 
@@ -162,7 +160,7 @@ public class BoardManager : MonoBehaviour
         {
             for (int x = 0; x < _levelData.GetLength(2); x++)
             {
-                BoardData[y, x] = blcokManager.CreateBlock(_levelData[0, y, x], x, y);
+                BoardData[y, x] = blockManager.CreateBlock(_levelData[0, y, x], x, y);
 
                 if (speciesKind < _levelData[0, y, x])
                 {
@@ -174,21 +172,9 @@ public class BoardManager : MonoBehaviour
         cameraObject.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
     }
 
-    public void BlockReSpawn()
+    public List<GameObject> BlockReSpawn()
     {
-        for (int i = 0; i < countMatchedBlock.Length; i++)
-        {
-            for(int j = 0;  j < countMatchedBlock[i]; j++)
-            {
-                blockManager.CreateBlock(Random.Range(0, speciesKind), i, -j - 1, countMatchedBlock[i] + j);
-            }
-        }
-
-        gameManager.ChangeGameState(GameState.fall);
-    }
-
-    public List<GameObject> FallBlockList()
-    {
+        GameObject[,] virtualMap = new GameObject[BoardData.GetLength(0), BoardData.GetLength(1)];
         List<GameObject> fallBlocks = new List<GameObject>();
 
         for (int y = 0; y < BoardData.GetLength(0); y++)
@@ -196,74 +182,33 @@ public class BoardManager : MonoBehaviour
             for (int x = 0; x < BoardData.GetLength(1); x++)
             {
                 GameObject block = BoardData[y, x];
-                //널 참조
-                if(block.GetComponent<Block>().fall > 0)
+                if (block == null)
+                    continue;
+
+                if (block.GetComponent<Block>().fall > 0)
                 {
+                    virtualMap[y + block.GetComponent<Block>().fall, x] = BoardData[y, x];
                     fallBlocks.Add(block);
+                }
+                else
+                {
+                    virtualMap[y, x] = BoardData[y, x];
                 }
             }
         }
+
+        for (int x = 0; x < countMatchedBlock.Length; x++)
+        {
+            for (int j = 0; j < countMatchedBlock[x]; j++)
+            {
+                fallBlocks.Add(blockManager.CreateBlock(Random.Range(0, speciesKind), x, -j - 1, countMatchedBlock[x] + j));
+            }
+        }
+
+        gameManager.ChangeGameState(GameState.fall);
 
         return fallBlocks;
     }
-
-    /*`
-    //블럭 위치를 교환하였을때 3매치가 가능한지 확인하는 함수
-    void CanMakeMatch()
-    {
-        GameObject[,] map = mapComponent.MapData;   
-        int[,] mapData = new int[0,0];              //매치 확인을 위한 임시 변수
-
-        for (int y = 0; y < map.GetLength(0); y++)
-        {
-            for (int x = 0; x < map.GetLength(1); x++)
-            {
-                GameObject[,] virtualMap;
-
-                if (x > 0)
-                {
-                    virtualMap = map;
-                    (virtualMap[y, x], virtualMap[y, x - 1]) = (virtualMap[y, x - 1], virtualMap[y, x]);
-                    mapData = MatchChack(virtualMap);
-                }
-
-                if(x < map.GetLength(1))
-                {
-                    virtualMap = map;
-                    (virtualMap[y, x], virtualMap[y, x + 1]) = (virtualMap[y, x + 1], virtualMap[y, x]);
-                    mapData = MatchChack(virtualMap);
-                }
-
-                if (y > 0)
-                {
-                    virtualMap = map;
-                    (virtualMap[y, x], virtualMap[y - 1, x]) = (virtualMap[y - 1, x], virtualMap[y, x]);
-                    mapData = MatchChack(virtualMap);
-                }
-
-                if (y < map.GetLength(0))
-                {
-                    virtualMap = map;
-                    (virtualMap[y, x], virtualMap[y + 1, x]) = (virtualMap[y + 1, x], virtualMap[y, x]);
-                    mapData = MatchChack(virtualMap);
-                }
-            }
-        }
-
-        if(mapData.GetLength(0) == 0 || mapData.GetLength(1) == 0)
-        {
-            //터뜨릴 수 있으면 리턴
-            return;
-        }
-
-        else
-        {
-            //가능한게 없으면 재배치
-        }
-
-        Debug.Log("ㅋㅋ");
-    }
-    */
 
     void Start()
     {
@@ -281,3 +226,61 @@ public class BoardManager : MonoBehaviour
         CreateMap(levelData);
     }
 }
+
+/*`
+   //블럭 위치를 교환하였을때 3매치가 가능한지 확인하는 함수
+   void CanMakeMatch()
+   {
+       GameObject[,] map = mapComponent.MapData;   
+       int[,] mapData = new int[0,0];              //매치 확인을 위한 임시 변수
+
+       for (int y = 0; y < map.GetLength(0); y++)
+       {
+           for (int x = 0; x < map.GetLength(1); x++)
+           {
+               GameObject[,] virtualMap;
+
+               if (x > 0)
+               {
+                   virtualMap = map;
+                   (virtualMap[y, x], virtualMap[y, x - 1]) = (virtualMap[y, x - 1], virtualMap[y, x]);
+                   mapData = MatchChack(virtualMap);
+               }
+
+               if(x < map.GetLength(1))
+               {
+                   virtualMap = map;
+                   (virtualMap[y, x], virtualMap[y, x + 1]) = (virtualMap[y, x + 1], virtualMap[y, x]);
+                   mapData = MatchChack(virtualMap);
+               }
+
+               if (y > 0)
+               {
+                   virtualMap = map;
+                   (virtualMap[y, x], virtualMap[y - 1, x]) = (virtualMap[y - 1, x], virtualMap[y, x]);
+                   mapData = MatchChack(virtualMap);
+               }
+
+               if (y < map.GetLength(0))
+               {
+                   virtualMap = map;
+                   (virtualMap[y, x], virtualMap[y + 1, x]) = (virtualMap[y + 1, x], virtualMap[y, x]);
+                   mapData = MatchChack(virtualMap);
+               }
+           }
+       }
+
+       if(mapData.GetLength(0) == 0 || mapData.GetLength(1) == 0)
+       {
+           //터뜨릴 수 있으면 리턴
+           return;
+       }
+
+       else
+       {
+           //가능한게 없으면 재배치
+       }
+
+       Debug.Log("ㅋㅋ");
+   }
+   */
