@@ -37,6 +37,11 @@ public class GameManager : MonoBehaviour
 
         switch (gameState)
         {
+            case GameState.wait:
+                {
+                    CycleEndInit();
+                    break;
+                }
             case GameState.destroy:
                 {
                     boardManager.DestroyBlock();
@@ -49,7 +54,8 @@ public class GameManager : MonoBehaviour
                 }
             case GameState.check:
                 {
-
+                    Debug.Log("üũ" + boardManager.BoardData.GetLength(0));
+                    //boardManager.NowBoardCheck();
                     break;
                 }
         }

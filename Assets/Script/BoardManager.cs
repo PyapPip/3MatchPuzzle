@@ -13,7 +13,7 @@ public class BoardManager : MonoBehaviour
     private int[,,] levelData = new int[1, 5, 5];   //단계 y x
     private bool[,] matchedBlocks;                  //x y
     private int[] countMatchedBlock;       //x y
-
+     
     //블럭 스왑
     public void TrySwap(Vector2Int _selectBlockPos, Vector2Int _dir)
     {
@@ -196,7 +196,6 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
-
         for (int x = 0; x < countMatchedBlock.Length; x++)
         {
             for (int j = 0; j < countMatchedBlock[x]; j++)
@@ -208,6 +207,39 @@ public class BoardManager : MonoBehaviour
         gameManager.ChangeGameState(GameState.fall);
 
         return fallBlocks;
+    }
+
+    public void NowBoardCheck()
+    {
+        int[,] virtualMap = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
+
+        for (int x = 0; x < virtualMap.GetLength(0); x++)
+        {
+            for (int y = 0; y < virtualMap.GetLength(1); y++)
+            {
+                if(BoardData[y, x] == null)
+                {
+                    Debug.Log("x:" + x + "   y:" + y);
+                }
+                else
+                {
+                    virtualMap[x, y] = BoardData[y, x].GetComponent<Block>().species;
+                }
+            }
+        }
+
+        bool matchResult = MatchCheck(virtualMap);
+
+        if(matchResult)
+        {
+            gameManager.ChangeGameState(GameState.destroy);
+            return;
+        }
+
+        else
+        {
+            gameManager.ChangeGameState(GameState.wait);
+        }
     }
 
     void Start()
