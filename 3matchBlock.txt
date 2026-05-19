@@ -166,3 +166,4 @@ block의 x y 변수 -> Vector2Int 로 변환
 MapManager의 MapData는 함수별로 mapData를 받아 쓰고있다. 그냥 전역변수로 처리하면 안되나?
 MatchChack 의 확인은 GameObject[,] 가 아닌 vectorInt2를 이용하자
 명명 규칙 확립 필요.
+TrySwap 의 26줄을 함수화 해야할까?

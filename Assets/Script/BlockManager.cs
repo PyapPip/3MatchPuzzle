@@ -20,13 +20,13 @@ public class BlockManager : MonoBehaviour
     }
 
     //좌표 지정을 위해 오버라이딩한 함수
-    public GameObject CreateBlock(int _shapes, int _x, int _y, int _fall)
+    public GameObject CreateBlock(int _shapes, Vector2Int _boardPos, int _fall, Vector2 _position)
     {
         GameObject instance = Instantiate(Shapes[_shapes], this.transform);
-        instance.GetComponent<Block>().boardPos = new Vector2Int(_x, _y);
+        instance.GetComponent<Block>().boardPos = _boardPos;
         instance.GetComponent<Block>().species = _shapes;
         instance.GetComponent<Block>().fall = _fall;
-        instance.transform.position = new Vector2(_x, -_y);
+        instance.transform.position = _position;
 
         return instance;
     }
@@ -54,7 +54,7 @@ public class BlockManager : MonoBehaviour
         for (int i = 0; i < _fallBlockList.Count; i++)
         {
             Vector2 targetPos = _fallBlockList[i].GetComponent<Block>().boardPos;
-            targetPos.y = -targetPos.y - _fallBlockList[i].GetComponent<Block>().fall;
+            targetPos.y *= -1;
             _fallBlockList[i].GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Fall, targetPos);
         }
     }

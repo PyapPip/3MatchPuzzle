@@ -10,8 +10,7 @@ public enum GameState
     select,
     move,
     destroy,
-    respawn,
-    fall,
+    settle,
     check
 }
 
@@ -27,7 +26,7 @@ public class GameManager : MonoBehaviour
     private bool isMatched;
 
     /// <summary>
-    ///  wait, select, move, destroy, fall, respawn, check
+    ///  wait, select, move, destroy, settle, check
     /// </summary>
     public void ChangeGameState(GameState _state)
     {
@@ -39,7 +38,8 @@ public class GameManager : MonoBehaviour
         {
             case GameState.wait:
                 {
-                    CycleEndInit();
+
+                    //CycleEndInit();
                     break;
                 }
             case GameState.destroy:
@@ -47,15 +47,17 @@ public class GameManager : MonoBehaviour
                     boardManager.DestroyBlock();
                     break;
                 }
-            case GameState.respawn:
+            case GameState.settle:
                 {
-                    blockManager.playFall(boardManager.BlockReSpawn());
+                    List<GameObject> fallBlockList = boardManager.BlockReSpawn();
+                    //boardManager.ResolveFall(fallBlockList);
+                    blockManager.playFall(fallBlockList);
                     break;
                 }
             case GameState.check:
                 {
                     Debug.Log("üũ" + boardManager.BoardData.GetLength(0));
-                    //boardManager.NowBoardCheck();
+                    boardManager.NowBoardCheck();
                     break;
                 }
         }
@@ -134,7 +136,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (gameState == GameState.fall)
+        if (gameState == GameState.settle)
         {
             ChangeGameState(GameState.check);
         }

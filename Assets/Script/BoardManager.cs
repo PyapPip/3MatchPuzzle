@@ -4,6 +4,8 @@ using UnityEngine;
 public class BoardManager : MonoBehaviour
 {
     public GameObject[,] BoardData; //y x
+    public List<GameObject> fallBlocks;
+
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private BlockManager blockManager;
@@ -128,8 +130,6 @@ public class BoardManager : MonoBehaviour
                     Destroy(BoardData[y, x]);
                     BoardData[y, x] = null;
 
-                    Debug.Log("X = " + x + "  Y = " + y);
-
                     //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
                     for (int upperY = y - 1; upperY >= 0; upperY--)
                     {
@@ -147,7 +147,7 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        gameManager.ChangeGameState(GameState.respawn);
+        gameManager.ChangeGameState(GameState.settle);
     }
 
     //이 주석 아래는 수정 예정
@@ -175,9 +175,10 @@ public class BoardManager : MonoBehaviour
     public List<GameObject> BlockReSpawn()
     {
         GameObject[,] virtualMap = new GameObject[BoardData.GetLength(0), BoardData.GetLength(1)];
-        List<GameObject> fallBlocks = new List<GameObject>();
+        fallBlocks = new List<GameObject>();
+        //List<GameObject> fallBlocks = new List<GameObject>();
 
-        for (int y = 0; y < BoardData.GetLength(0); y++)
+        for (int y = BoardData.GetLength(0) - 1; y >= 0; y--)
         {
             for (int x = 0; x < BoardData.GetLength(1); x++)
             {
@@ -198,15 +199,35 @@ public class BoardManager : MonoBehaviour
         }
         for (int x = 0; x < countMatchedBlock.Length; x++)
         {
-            for (int j = 0; j < countMatchedBlock[x]; j++)
+            for (int fall = 0; fall < countMatchedBlock[x]; fall++)
             {
-                fallBlocks.Add(blockManager.CreateBlock(Random.Range(0, speciesKind), x, -j - 1, countMatchedBlock[x] + j));
+                GameObject newBlock = blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, fall), fall, new Vector2(x, countMatchedBlock[x]));
+                fallBlocks.Add(newBlock);
+                virtualMap[fall, x] = newBlock;
             }
         }
 
-        gameManager.ChangeGameState(GameState.fall);
+        BoardData = virtualMap;
 
         return fallBlocks;
+    }
+
+    public void ResolveFall(List<GameObject> _fallBlockList)
+    {
+        for (int i = _fallBlockList.Count - 1; i >= 0; i--)
+        {
+            GameObject block = _fallBlockList[i];
+            if (block == null)
+                continue;
+
+            Block blockComponent = block.GetComponent<Block>();
+            if (blockComponent != null && blockComponent.fall > 0)
+            {
+                BoardData[blockComponent.boardPos.y + blockComponent.fall, blockComponent.boardPos.x] = block;
+                BoardData[blockComponent.boardPos.y, blockComponent.boardPos.x] = null;
+                blockComponent.fall = 0;
+            }
+        }
     }
 
     public void NowBoardCheck()
@@ -241,6 +262,16 @@ public class BoardManager : MonoBehaviour
             gameManager.ChangeGameState(GameState.wait);
         }
     }
+
+    /*
+    void AddBoardData(GameObject _newBlock, Vector2Int _boardPos)
+    {
+        if (BoardData[_boardPos.y, _boardPos.x] == null)
+        {
+            BoardData[_boardPos.y, _boardPos.x] = _newBlock;
+        }
+    }
+    */
 
     void Start()
     {
