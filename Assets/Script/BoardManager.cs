@@ -197,14 +197,17 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+
         for (int x = 0; x < countMatchedBlock.Length; x++)
         {
-            for (int fall = 0; fall < countMatchedBlock[x]; fall++)
-            {
-                GameObject newBlock = blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, fall), fall, new Vector2(x, countMatchedBlock[x]));
-                fallBlocks.Add(newBlock);
-                virtualMap[fall, x] = newBlock;
-            }
+            if (countMatchedBlock[x] == 0)
+                continue;
+
+            int _fall = countMatchedBlock[x];
+            //보드 좌표에 -1 하는 이유는 블럭이 생성될 때 보드 좌표보다 1만큼 위에서 시작하기 때문
+            GameObject newBlock = blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, _fall - 1), _fall, new Vector2(x, _fall));
+            fallBlocks.Add(newBlock);
+            virtualMap[_fall - 1, x] = newBlock;
         }
 
         BoardData = virtualMap;

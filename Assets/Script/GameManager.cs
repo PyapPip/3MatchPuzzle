@@ -11,7 +11,8 @@ public enum GameState
     move,
     destroy,
     settle,
-    check
+    check,
+    debug
 }
 
 public class GameManager : MonoBehaviour
@@ -51,24 +52,52 @@ public class GameManager : MonoBehaviour
                 {
                     List<GameObject> fallBlockList = boardManager.BlockReSpawn();
                     //boardManager.ResolveFall(fallBlockList);
+
+                    /*디버그용
+                    {
+                        ChangeGameState(GameState.debug);
+
+                        for (int i = 0; i < fallBlockList.Count; i++)
+                        {
+                            Block block = fallBlockList[i].GetComponent<Block>();
+                            if (boardManager.BoardData[block.boardPos.y, block.boardPos.x] == null)
+                            {
+                                Debug.Log("Pos" + block.boardPos + " BlockSpecies:" + block.species + " BoardData:null");
+                            }
+                            else
+                            {
+                                Debug.Log("Pos" + block.boardPos + " BlockSpecies:" + block.species + " BoardData:"
+                                    + boardManager.BoardData[block.boardPos.y, block.boardPos.x].GetComponent<Block>().species);
+                            }
+
+                        }
+
+                        break;
+                    }
+                    //*/
+
                     blockManager.playFall(fallBlockList);
                     break;
                 }
             case GameState.check:
                 {
-                    Debug.Log("체크" + boardManager.BoardData.GetLength(0));
+                    Debug.Log("GameState.check");
                     boardManager.NowBoardCheck();
+                    break;
+                }
+            case GameState.debug:
+                {
                     break;
                 }
         }
     }
-                                      
+
     public void OnClick(Vector2Int _pos)
     {
         if (gameState != GameState.wait && gameState != GameState.select)
         {
             Debug.Log("OnClick 예외");
-            return; 
+            return;
         }
 
         switch (gameState)
