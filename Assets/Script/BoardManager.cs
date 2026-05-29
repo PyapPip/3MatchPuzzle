@@ -4,7 +4,6 @@ using UnityEngine;
 public class BoardManager : MonoBehaviour
 {
     public GameObject[,] BoardData; //y x
-    public List<GameObject> fallBlocks;
 
 
     [SerializeField] private GameManager gameManager;
@@ -16,6 +15,11 @@ public class BoardManager : MonoBehaviour
     private bool[,] matchedBlocks;                  //x y
     private int[] countMatchedBlock;       //x y
      
+    public void InitBoard()
+    {
+        //fallBlocks.Clear();
+    }
+
     //블럭 스왑
     public void TrySwap(Vector2Int _selectBlockPos, Vector2Int _dir)
     {
@@ -172,10 +176,27 @@ public class BoardManager : MonoBehaviour
         cameraObject.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
     }
 
-    public List<GameObject> BlockReSpawn()
+    public void BlockReSpawn()
+    {
+        List<GameObject> fallBlocks = new List<GameObject>();
+        for (int x = 0; x < countMatchedBlock.Length; x++)
+        {
+            if (countMatchedBlock[x] == 0)
+                continue;
+
+            int _fall = countMatchedBlock[x];
+            //보드 좌표에 -1 하는 이유는 블럭이 생성될 때 보드 좌표보다 1만큼 위에서 시작하기 때문
+            GameObject newBlock = blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, _fall - 1), _fall, new Vector2(x, _fall));
+            fallBlocks.Add(newBlock);
+        }
+
+        ResolveFall(fallBlocks);
+    }
+
+    public void ResolveFall(List<GameObject> _fallBlockList)
     {
         GameObject[,] virtualMap = new GameObject[BoardData.GetLength(0), BoardData.GetLength(1)];
-        fallBlocks = new List<GameObject>();
+        _fallBlockList = new List<GameObject>();
         //List<GameObject> fallBlocks = new List<GameObject>();
 
         for (int y = BoardData.GetLength(0) - 1; y >= 0; y--)
@@ -189,7 +210,7 @@ public class BoardManager : MonoBehaviour
                 if (block.GetComponent<Block>().fall > 0)
                 {
                     virtualMap[y + block.GetComponent<Block>().fall, x] = BoardData[y, x];
-                    fallBlocks.Add(block);
+                    _fallBlockList.Add(block);
                 }
                 else
                 {
@@ -198,25 +219,6 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        for (int x = 0; x < countMatchedBlock.Length; x++)
-        {
-            if (countMatchedBlock[x] == 0)
-                continue;
-
-            int _fall = countMatchedBlock[x];
-            //보드 좌표에 -1 하는 이유는 블럭이 생성될 때 보드 좌표보다 1만큼 위에서 시작하기 때문
-            GameObject newBlock = blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, _fall - 1), _fall, new Vector2(x, _fall));
-            fallBlocks.Add(newBlock);
-            virtualMap[_fall - 1, x] = newBlock;
-        }
-
-        BoardData = virtualMap;
-
-        return fallBlocks;
-    }
-
-    public void ResolveFall(List<GameObject> _fallBlockList)
-    {
         for (int i = _fallBlockList.Count - 1; i >= 0; i--)
         {
             GameObject block = _fallBlockList[i];

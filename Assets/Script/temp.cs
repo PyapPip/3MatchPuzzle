@@ -17,6 +17,7 @@ public class temp : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
         if (isMoving) return; //이동 중이면 입력 무시
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -39,6 +40,7 @@ public class temp : MonoBehaviour
             gridX += 1;
             StartCoroutine(MoveBlock());
         }
+        */
     }
 
 
