@@ -50,9 +50,6 @@ public class GameManager : MonoBehaviour
                 }
             case GameState.settle:
                 {
-                    boardManager.BlockReSpawn();
-                    //boardManager.ResolveFall(fallBlockList);
-
                     /*디버그용
                     {
                         ChangeGameState(GameState.debug);
@@ -76,6 +73,7 @@ public class GameManager : MonoBehaviour
                     }
                     //*/
 
+                    List<GameObject> fallBlockList = boardManager.BlockReSpawn();
                     blockManager.playFall(fallBlockList);
                     break;
                 }

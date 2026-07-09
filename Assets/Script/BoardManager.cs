@@ -13,8 +13,10 @@ public class BoardManager : MonoBehaviour
     private int speciesKind;
     private int[,,] levelData = new int[1, 5, 5];   //단계 y x
     private bool[,] matchedBlocks;                  //x y
-    private int[] countMatchedBlock;       //x y
-     
+    private int[] countMatchedBlock;                //x y
+
+    private int debugCount = 0;
+
     public void InitBoard()
     {
         //fallBlocks.Clear();
@@ -124,6 +126,8 @@ public class BoardManager : MonoBehaviour
 
     public void DestroyBlock()
     {
+        countMatchedBlock = new int[BoardData.GetLength(1)]; 
+
         for (int x = 0; x < matchedBlocks.GetLength(0); x++)
         {
             for (int y = 0; y < matchedBlocks.GetLength(1); y++)
@@ -131,10 +135,12 @@ public class BoardManager : MonoBehaviour
                 if (matchedBlocks[x,y])
                 {
                     countMatchedBlock[x]++;
-                    Destroy(BoardData[y, x]);
-                    BoardData[y, x] = null;
+                    GameObject targetBlock = BoardData[y, x];
+                    BoardData[y, x] = null; 
+                    Destroy(targetBlock);
 
                     //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
+ 
                     for (int upperY = y - 1; upperY >= 0; upperY--)
                     {
                         if (BoardData[upperY, x] == null)
@@ -142,7 +148,7 @@ public class BoardManager : MonoBehaviour
                         
                         Block block = BoardData[upperY, x].GetComponent<Block>();
 
-                        if (block != null)
+                        if (block != null)  
                         {
                             block.fall++;
                         }
@@ -155,10 +161,9 @@ public class BoardManager : MonoBehaviour
     }
 
     //이 주석 아래는 수정 예정
-    public void CreateMap(int[,,] _levelData)
+    public void CreateMap(int[,,] _levelData)                                           
     {
         BoardData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
-        countMatchedBlock = new int[_levelData.GetLength(2)];
 
         for (int y = 0; y < _levelData.GetLength(1); y++)
         {
@@ -176,41 +181,39 @@ public class BoardManager : MonoBehaviour
         cameraObject.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
     }
 
-    public void BlockReSpawn()
+    public List<GameObject> BlockReSpawn()
     {
         List<GameObject> fallBlocks = new List<GameObject>();
         for (int x = 0; x < countMatchedBlock.Length; x++)
         {
-            if (countMatchedBlock[x] == 0)
-                continue;
-
-            int _fall = countMatchedBlock[x];
-            //보드 좌표에 -1 하는 이유는 블럭이 생성될 때 보드 좌표보다 1만큼 위에서 시작하기 때문
-            GameObject newBlock = blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, _fall - 1), _fall, new Vector2(x, _fall));
-            fallBlocks.Add(newBlock);
+            for (int y = 0; y < countMatchedBlock[x]; y++)
+            {
+                int _fall = countMatchedBlock[x];
+                GameObject newBlock = blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, y - 1), _fall, new Vector2(x, _fall));
+                fallBlocks.Add(newBlock);
+            }
         }
-
-        ResolveFall(fallBlocks);
+        debugCount++;
+        Debug.Log(debugCount);
+        return ResolveFall(fallBlocks);
     }
 
-    public void ResolveFall(List<GameObject> _fallBlockList)
+    public List<GameObject> ResolveFall(List<GameObject> _fallBlockList)
     {
         GameObject[,] virtualMap = new GameObject[BoardData.GetLength(0), BoardData.GetLength(1)];
-        _fallBlockList = new List<GameObject>();
-        //List<GameObject> fallBlocks = new List<GameObject>();
 
         for (int y = BoardData.GetLength(0) - 1; y >= 0; y--)
         {
             for (int x = 0; x < BoardData.GetLength(1); x++)
             {
-                GameObject block = BoardData[y, x];
-                if (block == null)
+                if (BoardData[y, x] == null)
                     continue;
 
-                if (block.GetComponent<Block>().fall > 0)
+                Block block = BoardData[y, x].GetComponent<Block>();
+
+                if (block.fall > 0)
                 {
-                    virtualMap[y + block.GetComponent<Block>().fall, x] = BoardData[y, x];
-                    _fallBlockList.Add(block);
+                    _fallBlockList.Add(block.gameObject);
                 }
                 else
                 {
@@ -226,13 +229,21 @@ public class BoardManager : MonoBehaviour
                 continue;
 
             Block blockComponent = block.GetComponent<Block>();
+
             if (blockComponent != null && blockComponent.fall > 0)
             {
-                BoardData[blockComponent.boardPos.y + blockComponent.fall, blockComponent.boardPos.x] = block;
-                BoardData[blockComponent.boardPos.y, blockComponent.boardPos.x] = null;
-                blockComponent.fall = 0;
+                virtualMap[blockComponent.boardPos.y + blockComponent.fall, blockComponent.boardPos.x] = block; //fall
+                if (blockComponent.boardPos.y >= 0 && blockComponent.boardPos.x >= 0)
+                {
+                    Debug.Log("y:" + blockComponent.boardPos.y + "   x:" + blockComponent.boardPos.x);
+                    virtualMap[blockComponent.boardPos.y, blockComponent.boardPos.x] = null;
+                }
             }
         }
+
+        BoardData = virtualMap;
+
+        return _fallBlockList;
     }
 
     public void NowBoardCheck()
@@ -247,6 +258,7 @@ public class BoardManager : MonoBehaviour
                 {
                     Debug.Log("x:" + x + "   y:" + y);
                 }
+
                 else
                 {
                     virtualMap[x, y] = BoardData[y, x].GetComponent<Block>().species;

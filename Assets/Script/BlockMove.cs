@@ -125,6 +125,7 @@ public class BlockMove : MonoBehaviour
 
         animState = BlockAnimState.wait; //check 만들어서 적용 필요
         moveSpeed = 0;
+        GetComponent<Block>().fall = 0;
         GetComponentInParent<BlockManager>().BlockMoveEnd();
         return;
     }
