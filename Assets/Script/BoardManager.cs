@@ -234,18 +234,12 @@ public class BoardManager : MonoBehaviour
 
             if (blockComponent != null && blockComponent.fall > 0)
             {
-                if (blockComponent.boardPos.y >= 0 && blockComponent.boardPos.x >= 0)
-                {
-                    //Debug.Log("y:" + blockComponent.boardPos.y + "   x:" + blockComponent.boardPos.x);
-                    virtualMap[blockComponent.boardPos.y + blockComponent.fall, blockComponent.boardPos.x] = block; //fall
-                    virtualMap[blockComponent.boardPos.y, blockComponent.boardPos.x] = null;
-                    blockComponent.boardPos.y += blockComponent.fall;
-                }
+                virtualMap[blockComponent.boardPos.y + blockComponent.fall, blockComponent.boardPos.x] = block;
+                blockComponent.boardPos.y += blockComponent.fall;
             }
         }
 
         BoardData = virtualMap;
-        //gameManager.ChangeGameState(GameState.debug);
 
         return _fallBlockList;
     }
