@@ -180,4 +180,15 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 60;
     }
+
+    //임시 디버그용
+
+    private void Update()
+    {
+        if(gameState == GameState.debug)
+        {
+            boardManager.BoardData = boardManager.BoardData;
+            //Debug.Log("Debug Mode");
+        }
+    }
 }

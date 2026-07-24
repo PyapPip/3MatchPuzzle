@@ -7,6 +7,6 @@ public class Block : MonoBehaviour
 
     private void Update()
     {
-        this.gameObject.name = $"Block_{boardPos.x}_{boardPos.y}";
+        this.gameObject.name = $"Block_{boardPos.x}_{boardPos.y}_{fall}";
     }
 }

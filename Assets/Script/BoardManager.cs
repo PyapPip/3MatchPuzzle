@@ -188,18 +188,20 @@ public class BoardManager : MonoBehaviour
         {
             for (int y = 0; y < countMatchedBlock[x]; y++)
             {
-                int _fall = countMatchedBlock[x];
-                GameObject newBlock = blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, y - 1), _fall, new Vector2(x, _fall));
+                //조각 종류 랜덤, 보드상 좌표(x, fall값이 더해질것을 고려한 y), fall값, 실제 좌표
+                GameObject newBlock = 
+                    blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, - y - 1), countMatchedBlock[x], new Vector2(x, countMatchedBlock[x]));
+
                 fallBlocks.Add(newBlock);
             }
         }
         debugCount++;
-        Debug.Log(debugCount);
+
         return ResolveFall(fallBlocks);
-    }
+    }                   
 
     public List<GameObject> ResolveFall(List<GameObject> _fallBlockList)
-    {
+    {   
         GameObject[,] virtualMap = new GameObject[BoardData.GetLength(0), BoardData.GetLength(1)];
 
         for (int y = BoardData.GetLength(0) - 1; y >= 0; y--)
@@ -217,7 +219,7 @@ public class BoardManager : MonoBehaviour
                 }
                 else
                 {
-                    virtualMap[y, x] = BoardData[y, x];
+                    virtualMap[y, x] = BoardData[y, x]; 
                 }
             }
         }
@@ -232,16 +234,18 @@ public class BoardManager : MonoBehaviour
 
             if (blockComponent != null && blockComponent.fall > 0)
             {
-                virtualMap[blockComponent.boardPos.y + blockComponent.fall, blockComponent.boardPos.x] = block; //fall
                 if (blockComponent.boardPos.y >= 0 && blockComponent.boardPos.x >= 0)
                 {
-                    Debug.Log("y:" + blockComponent.boardPos.y + "   x:" + blockComponent.boardPos.x);
+                    //Debug.Log("y:" + blockComponent.boardPos.y + "   x:" + blockComponent.boardPos.x);
+                    virtualMap[blockComponent.boardPos.y + blockComponent.fall, blockComponent.boardPos.x] = block; //fall
                     virtualMap[blockComponent.boardPos.y, blockComponent.boardPos.x] = null;
+                    blockComponent.boardPos.y += blockComponent.fall;
                 }
             }
         }
 
         BoardData = virtualMap;
+        //gameManager.ChangeGameState(GameState.debug);
 
         return _fallBlockList;
     }
@@ -254,7 +258,7 @@ public class BoardManager : MonoBehaviour
         {
             for (int y = 0; y < virtualMap.GetLength(1); y++)
             {
-                if(BoardData[y, x] == null)
+                if (BoardData[y, x] == null)
                 {
                     Debug.Log("x:" + x + "   y:" + y);
                 }
