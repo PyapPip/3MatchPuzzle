@@ -19,7 +19,17 @@ public class BoardManager : MonoBehaviour
 
     public void InitBoard()
     {
-        //fallBlocks.Clear();
+        countMatchedBlock = null;
+        matchedBlocks = null;
+        countMatchedBlock = null;
+
+        for(int y = 0; y < BoardData.GetLength(0); y++)
+        {
+            for(int x = 0; x < BoardData.GetLength(1); x++)
+            {
+                BoardData[y,x].GetComponent<Block>().fall = 0;
+            }
+        }
     }
 
     //블럭 스왑
@@ -166,7 +176,7 @@ public class BoardManager : MonoBehaviour
         BoardData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
 
         for (int y = 0; y < _levelData.GetLength(1); y++)
-        {
+        { 
             for (int x = 0; x < _levelData.GetLength(2); x++)
             {
                 BoardData[y, x] = blockManager.CreateBlock(_levelData[0, y, x], x, y);
@@ -190,7 +200,7 @@ public class BoardManager : MonoBehaviour
             {
                 //조각 종류 랜덤, 보드상 좌표(x, fall값이 더해질것을 고려한 y), fall값, 실제 좌표
                 GameObject newBlock = 
-                    blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, - y - 1), countMatchedBlock[x], new Vector2(x, countMatchedBlock[x]));
+                    blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, - y - 1), countMatchedBlock[x], new Vector2(x, y + 1));
 
                 fallBlocks.Add(newBlock);
             }
@@ -263,6 +273,8 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+
+        InitBoard();
 
         bool matchResult = MatchCheck(virtualMap);
 

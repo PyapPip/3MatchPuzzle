@@ -130,6 +130,8 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420034}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -206,12 +208,48 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1219802963}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &519420033
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.6, y: 2.6, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &519420034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02cf131a323dc3e4a86aa17812d0182c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Block
+  boardPos: {x: 0, y: 0}
+  species: 0
+  fall: 0
 --- !u!1 &797188080
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,11 +312,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BlockMabager
   gameManager: {fileID: 2058106821}
   Shapes:
-  - {fileID: 4238355767407492648, guid: 743b0f188a24b6b4e85384cc9e1e794b, type: 3}
-  - {fileID: 2485113073056696291, guid: 5f678b8ddf093124780d321e1cb1147d, type: 3}
-  - {fileID: 3339186923668902701, guid: be8e0039438ff1d4fb17df911dbd0818, type: 3}
-  - {fileID: 6613646768550894782, guid: 498564af33bb3a245a6f7d279dfe4608, type: 3}
-  - {fileID: 0}
+  - {fileID: 8700063054568776375, guid: c0272abb2077c0f47ab2dfa1ad4553c6, type: 3}
+  - {fileID: 6834248917728406088, guid: 642348f97e61e594e893edd31d9cab3d, type: 3}
+  - {fileID: 7635747444023119951, guid: 5d7fc27385cca7140b32e9b4264e42e8, type: 3}
+  - {fileID: 7473289137944967911, guid: 45c0ff50fc350464c8ebdaedc9d9607c, type: 3}
+  - {fileID: 7705375114233962913, guid: 5964db670fe17a14383cff23de2e1b35, type: 3}
+  moveBlockCount: 0
 --- !u!850595691 &848735394
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -419,6 +458,7 @@ MonoBehaviour:
   mouseManager: {fileID: 1219802962}
   blockManager: {fileID: 797188084}
   boardManager: {fileID: 797188082}
+  gameState: 0
 --- !u!4 &2058106822
 Transform:
   m_ObjectHideFlags: 0

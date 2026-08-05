@@ -39,8 +39,8 @@ public class GameManager : MonoBehaviour
         {
             case GameState.wait:
                 {
-
-                    //CycleEndInit();
+                    CycleEndInit();
+                    boardManager.BoardData.GetLength(0);
                     break;
                 }
             case GameState.destroy:
@@ -171,24 +171,13 @@ public class GameManager : MonoBehaviour
 
     public void CycleEndInit()
     {
-        ChangeGameState(GameState.wait);
         SelectBlockPos = new Vector2Int(-1, -1);
         isMatched = false;
+        boardManager.InitBoard();
     }
 
     private void Awake()
     {
         Application.targetFrameRate = 60;
-    }
-
-    //임시 디버그용
-
-    private void Update()
-    {
-        if(gameState == GameState.debug)
-        {
-            boardManager.BoardData = boardManager.BoardData;
-            //Debug.Log("Debug Mode");
-        }
     }
 }
