@@ -15,8 +15,8 @@ public class BlockMove : MonoBehaviour
         wait,
         Swaping,
         Snapback,
-        Fall
-        //,Destroyed  
+        Fall,
+        Matched  
     }
 
     // Update is called once per frame
@@ -40,6 +40,11 @@ public class BlockMove : MonoBehaviour
             case BlockAnimState.Fall:
                 {
                     fall();
+                    return;
+                }
+                case BlockAnimState.Matched:
+                {
+                    // 매치된 블록에 대한 처리
                     return;
                 }
         }
@@ -113,11 +118,11 @@ public class BlockMove : MonoBehaviour
     {
         if(this.transform.position != targetPos)
         {
-            moveSpeed += 5;
-
-            if (moveSpeed > 5)
+            moveSpeed += 1;
+              
+            if (moveSpeed > 15)
             {
-                moveSpeed = 5;
+                moveSpeed = 15;
             }
             transform.position = Vector3.MoveTowards(transform.position, targetPos, Time.deltaTime * moveSpeed);
             return;
@@ -128,5 +133,11 @@ public class BlockMove : MonoBehaviour
         GetComponent<Block>().fall = 0;
         GetComponentInParent<BlockManager>().BlockMoveEnd();
         return;
+    }
+
+    private void Matched()
+    {
+        // 매치된 블록에 대한 처리
+        // 예: 블록을 제거하거나 점수를 증가시키는 등의 로직을 구현할 수 있습니다.
     }
 }

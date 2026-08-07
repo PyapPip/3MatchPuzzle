@@ -57,6 +57,8 @@ public class BlockManager : MonoBehaviour
             targetPos.y *= -1;
             _fallBlockList[i].GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Fall, targetPos);
         }
+
+        moveBlockCount = _fallBlockList.Count;
     }
 
     public void BlockMoveEnd()

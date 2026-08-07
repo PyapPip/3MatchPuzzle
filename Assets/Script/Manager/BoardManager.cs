@@ -138,9 +138,9 @@ public class BoardManager : MonoBehaviour
     {
         countMatchedBlock = new int[BoardData.GetLength(1)]; 
 
-        for (int x = 0; x < matchedBlocks.GetLength(0); x++)
+        for (int y = 0; y < matchedBlocks.GetLength(1); y++)
         {
-            for (int y = 0; y < matchedBlocks.GetLength(1); y++)
+            for (int x = 0; x < matchedBlocks.GetLength(0); x++)
             {
                 if (matchedBlocks[x,y])
                 {
