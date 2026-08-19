@@ -15,8 +15,7 @@ public class BlockMove : MonoBehaviour
         wait,
         Swaping,
         Snapback,
-        Fall,
-        Matched  
+        Fall
     }
 
     // Update is called once per frame
@@ -40,11 +39,6 @@ public class BlockMove : MonoBehaviour
             case BlockAnimState.Fall:
                 {
                     fall();
-                    return;
-                }
-                case BlockAnimState.Matched:
-                {
-                    // 매치된 블록에 대한 처리
                     return;
                 }
         }

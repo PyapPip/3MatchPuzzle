@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6593083787926195449}
   - component: {fileID: 5628551370221061602}
   - component: {fileID: 9221157073582454530}
+  - component: {fileID: 1960632783426591582}
   m_Layer: 0
   m_Name: Match_Pop_Effect
   m_TagString: Untagged
@@ -113,3 +114,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1960632783426591582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4057432017578856742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09d17f39943aa44392cfcf2d3f00bcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchEffect
