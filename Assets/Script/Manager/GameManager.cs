@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MouseManager mouseManager;
     [SerializeField] private BlockManager blockManager;
     [SerializeField] private BoardManager boardManager;
+    [SerializeField] private FXManager    fxManager;
 
     [SerializeField] private GameState gameState;
 
@@ -174,10 +175,27 @@ public class GameManager : MonoBehaviour
         SelectBlockPos = new Vector2Int(-1, -1);
         isMatched = false;
         boardManager.InitBoard();
+        fxManager.countActiveEffect = 0;
+    }
+
+    public void GameSet()
+    {
+        for (int fxCount = 0; fxCount < 10; fxCount++)
+        {
+            fxManager.CreateMatchEffect();
+        }
+
+        boardManager.CreateMap(boardManager.levelData);
     }
 
     private void Awake()
     {
         Application.targetFrameRate = 60;
+    }
+
+    private void Start()
+    {
+        GameSet();
+        ChangeGameState(GameState.wait);
     }
 }

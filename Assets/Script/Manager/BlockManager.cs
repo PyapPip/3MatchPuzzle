@@ -61,6 +61,12 @@ public class BlockManager : MonoBehaviour
         moveBlockCount = _fallBlockList.Count;
     }
 
+    public void playDestroy(GameObject _block)
+    {
+        _block.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.destroy, _block.transform.position);
+        moveBlockCount++;
+    }
+
     public void BlockMoveEnd()
     {
         moveBlockCount--;

@@ -15,7 +15,8 @@ public class BlockMove : MonoBehaviour
         wait,
         Swaping,
         Snapback,
-        Fall
+        Fall,
+        destroy
     }
 
     // Update is called once per frame
@@ -38,10 +39,15 @@ public class BlockMove : MonoBehaviour
                 }
             case BlockAnimState.Fall:
                 {
-                    fall();
+                    Fall();
                     return;
                 }
-        }
+            case BlockAnimState.destroy:
+                {
+                    Destroy();
+                    return;
+                }
+        }  
     }
 
     /// <summary>
@@ -78,7 +84,7 @@ public class BlockMove : MonoBehaviour
         transform.position = targetPos;
         animState = BlockAnimState.wait;
         nowFrame = 0.0f;
-        GetComponentInParent<BlockManager>().BlockMoveEnd();
+        callMoveEnd();
         return;
     }
 
@@ -104,11 +110,11 @@ public class BlockMove : MonoBehaviour
         transform.position = startPos;
         animState = BlockAnimState.wait;
         nowFrame = 0.0f;
-        GetComponentInParent<BlockManager>().BlockMoveEnd();
+        callMoveEnd();
         return;
     }
 
-    private void fall()
+    private void Fall()
     {
         if(this.transform.position != targetPos)
         {
@@ -125,13 +131,18 @@ public class BlockMove : MonoBehaviour
         animState = BlockAnimState.wait; //check 만들어서 적용 필요
         moveSpeed = 0;
         GetComponent<Block>().fall = 0;
-        GetComponentInParent<BlockManager>().BlockMoveEnd();
+        callMoveEnd();
         return;
     }
 
-    private void Matched()
+    private void Destroy()
     {
-        // 매치된 블록에 대한 처리
-        // 예: 블록을 제거하거나 점수를 증가시키는 등의 로직을 구현할 수 있습니다.
+        this.GetComponent<Animator>().Play("BlockMatched");
+    }
+
+    //블럭 애니매이션이 끝났을때 호출하기 위한 함수. 애니메이션 이벤트에도 사용.
+    private void callMoveEnd()
+    {
+        GetComponentInParent<BlockManager>().BlockMoveEnd();
     }
 }
