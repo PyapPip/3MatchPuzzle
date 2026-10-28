@@ -7,7 +7,7 @@ public class BlockManager : MonoBehaviour
 
     public GameObject[] Shapes = new GameObject[5]; //5가지 종류의 블럭을 담아둔 배열
 
-    [SerializeField] private int moveBlockCount;
+    [SerializeField] public int moveBlockCount;
 
     public GameObject CreateBlock(int _shapes, int _x, int _y)
     {
@@ -31,7 +31,7 @@ public class BlockManager : MonoBehaviour
         return instance;
     }
 
-    public void playSwap(GameObject _block1, GameObject _block2)
+    public void PlaySwap(GameObject _block1, GameObject _block2)
     {
         moveBlockCount = 2;
 
@@ -42,36 +42,37 @@ public class BlockManager : MonoBehaviour
         _block2.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Swaping, _block1.transform.position);
     }
 
-    public void playSnapBack(GameObject _block1, GameObject _block2)
+    public void PlaySnapBack(GameObject _block1, GameObject _block2)
     {
         moveBlockCount = 2;
         _block1.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Snapback, _block2.transform.position);
         _block2.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Snapback, _block1.transform.position);
     }
 
-    public void playFall(List<GameObject> _fallBlockList)
+    public void PlayFall(List<GameObject> _fallBlockList)
     {
+        moveBlockCount = _fallBlockList.Count;
+
         for (int i = 0; i < _fallBlockList.Count; i++)
         {
             Vector2 targetPos = _fallBlockList[i].GetComponent<Block>().boardPos;
-            targetPos.y *= -1;
+            targetPos.y *= -1;      
             _fallBlockList[i].GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Fall, targetPos);
         }
 
-        moveBlockCount = _fallBlockList.Count;
     }
 
-    public void playDestroy(GameObject _block)
+    public void PlayDestroy(GameObject _block)
     {
-        _block.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.destroy, _block.transform.position);
         moveBlockCount++;
+        _block.GetComponent<BlockMove>().MovePlay(BlockMove.BlockAnimState.Destroy, _block.transform.position);
     }
 
     public void BlockMoveEnd()
     {
         moveBlockCount--;
-
-        if (moveBlockCount <= 0)
+        Debug.Log(moveBlockCount);
+        if (moveBlockCount == 0)
         {
             gameManager.MoveEnd();
         }

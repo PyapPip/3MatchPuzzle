@@ -8,3 +8,4 @@ public class MatchEffect : MonoBehaviour
         this.gameObject.SetActive(false);
     }
 }
+        

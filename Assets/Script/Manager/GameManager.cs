@@ -8,7 +8,7 @@ public enum GameState
 {
     wait,
     select,
-    move,
+    trySwap,
     destroy,
     settle,
     check,
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
                 }
             case GameState.destroy:
                 {
-                    boardManager.DestroyBlock();
+                    boardManager.ResolveMatchedBlock();
                     break;
                 }
             case GameState.settle:
@@ -75,12 +75,11 @@ public class GameManager : MonoBehaviour
                     //*/
 
                     List<GameObject> fallBlockList = boardManager.BlockReSpawn();
-                    blockManager.playFall(fallBlockList);
+                    blockManager.PlayFall(fallBlockList);
                     break;
                 }
             case GameState.check:
                 {
-                    Debug.Log("GameState.check");
                     boardManager.NowBoardCheck();
                     break;
                 }
@@ -137,22 +136,22 @@ public class GameManager : MonoBehaviour
 
     public void GetMatchResult(bool _result, GameObject _block1, GameObject _block2)
     {
-        ChangeGameState(GameState.move);
+        ChangeGameState(GameState.trySwap);
         isMatched = _result;
 
         if (isMatched)
         {
-            blockManager.playSwap(_block1, _block2);
+            blockManager.PlaySwap(_block1, _block2);
         }
         else
         {
-            blockManager.playSnapBack(_block1, _block2);
+            blockManager.PlaySnapBack(_block1, _block2);
         }
     }
 
     public void MoveEnd()
     {
-        if(gameState == GameState.move)
+        if(gameState == GameState.trySwap)
         {
             if (isMatched)
             {
@@ -162,6 +161,12 @@ public class GameManager : MonoBehaviour
             {
                 ChangeGameState(GameState.select);
             }
+        }
+
+        if(gameState == GameState.destroy)
+        {
+            boardManager.DestroyMatchedBlock();
+            ChangeGameState(GameState.settle);
         }
 
         if (gameState == GameState.settle)

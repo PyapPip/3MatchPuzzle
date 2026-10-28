@@ -8,21 +8,21 @@ public class BlockMove : MonoBehaviour
     private Vector3 startPos;
     private Vector3 targetPos;
 
-    private BlockAnimState animState = BlockAnimState.wait; 
+    private BlockAnimState animState = BlockAnimState.Idle; 
 
     public enum BlockAnimState
     {
-        wait,
+        Idle,
         Swaping,
         Snapback,
         Fall,
-        destroy
+        Destroy
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (animState == BlockAnimState.wait) 
+        if (animState == BlockAnimState.Idle) 
             return;
 
         switch (animState)
@@ -42,7 +42,7 @@ public class BlockMove : MonoBehaviour
                     Fall();
                     return;
                 }
-            case BlockAnimState.destroy:
+            case BlockAnimState.Destroy:
                 {
                     Destroy();
                     return;
@@ -82,7 +82,7 @@ public class BlockMove : MonoBehaviour
 
         // 마지막 위치 보정
         transform.position = targetPos;
-        animState = BlockAnimState.wait;
+        animState = BlockAnimState.Idle;
         nowFrame = 0.0f;
         callMoveEnd();
         return;
@@ -108,7 +108,7 @@ public class BlockMove : MonoBehaviour
         //Debug.Log(nowFrame);
 
         transform.position = startPos;
-        animState = BlockAnimState.wait;
+        animState = BlockAnimState.Idle;
         nowFrame = 0.0f;
         callMoveEnd();
         return;
@@ -128,7 +128,7 @@ public class BlockMove : MonoBehaviour
             return;
         }
 
-        animState = BlockAnimState.wait; //check 만들어서 적용 필요
+        animState = BlockAnimState.Idle; //check 만들어서 적용 필요
         moveSpeed = 0;
         GetComponent<Block>().fall = 0;
         callMoveEnd();
@@ -137,12 +137,17 @@ public class BlockMove : MonoBehaviour
 
     private void Destroy()
     {
-        this.GetComponent<Animator>().Play("BlockMatched");
+        this.GetComponent<Animator>().Play("Block_Destroy");
     }
 
     //블럭 애니매이션이 끝났을때 호출하기 위한 함수. 애니메이션 이벤트에도 사용.
     private void callMoveEnd()
     {
+        if (GetComponentInParent<BlockManager>().moveBlockCount < 0)
+        {
+            Debug.Log("moveBlockCount < 0");
+            return;
+        }
         GetComponentInParent<BlockManager>().BlockMoveEnd();
     }
 }

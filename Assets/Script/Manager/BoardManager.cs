@@ -1,20 +1,29 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class BoardManager : MonoBehaviour
 {
     public GameObject[,] BoardData; //y x
-
+    public int[,,] levelData = 
+        new int[1, 5, 5]{
+            {
+                { 0, 1, 2, 1, 0},
+                { 1, 2, 0, 2, 3},
+                { 3, 0, 3, 3, 1},
+                { 3, 2, 0, 2 ,1},
+                { 0, 3, 2, 1, 0}
+            }
+        };
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private BlockManager blockManager;
     [SerializeField] private GameObject cameraObject;
+    [SerializeField] private FXManager fxManager;
 
     private int speciesKind;
-    private int[,,] levelData = new int[1, 5, 5];   //단계 y x
     private bool[,] matchedBlocks;                  //x y
     private int[] countMatchedBlock;                //x y
-
     private int debugCount = 0;
 
     public void InitBoard()
@@ -134,7 +143,7 @@ public class BoardManager : MonoBehaviour
         return isMatched;
     }
 
-    public void DestroyBlock()
+    public void ResolveMatchedBlock()
     {
         countMatchedBlock = new int[BoardData.GetLength(1)]; 
 
@@ -146,28 +155,46 @@ public class BoardManager : MonoBehaviour
                 {
                     countMatchedBlock[x]++;
                     GameObject targetBlock = BoardData[y, x];
-                    BoardData[y, x] = null; 
-                    Destroy(targetBlock);
+                    blockManager.PlayDestroy(targetBlock);
+                    BoardData[y, x] = null;
+                    //fxManager.PlayMatchEffect(targetBlock.transform.position);
 
                     //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
- 
-                    for (int upperY = y - 1; upperY >= 0; upperY--)
-                    {
-                        if (BoardData[upperY, x] == null)
-                            continue;
-                        
-                        Block block = BoardData[upperY, x].GetComponent<Block>();
 
-                        if (block != null)  
-                        {
-                            block.fall++;
-                        }
-                    }
+                    AddFallAbove(x, y);
                 }
             }
         }
+    }
 
-        gameManager.ChangeGameState(GameState.settle);
+    public void DestroyMatchedBlock()
+    {
+        for(int y = 0; y < matchedBlocks.GetLength(0); y++)
+        {
+            for (int x = 0; x < matchedBlocks.GetLength(1); x++)
+            {
+                if (!matchedBlocks[x, y])
+                    continue;
+
+                Destroy(BoardData[y, x]);
+            }
+        }
+    }
+
+    private void AddFallAbove(int _boardX, int _upperY)
+    {
+        for (int y = _upperY - 1; y >= 0; y--)
+        {
+            if (BoardData[y, _boardX] == null)
+                continue;
+
+            Block block = BoardData[y, _boardX].GetComponent<Block>();
+
+            if (block != null)
+            {
+                block.fall++;
+            }
+        }
     }
 
     //이 주석 아래는 수정 예정
@@ -290,6 +317,11 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        CreateMap(new int[0,0,0]);
+    }
+
     /*
     void AddBoardData(GameObject _newBlock, Vector2Int _boardPos)
     {
@@ -299,22 +331,6 @@ public class BoardManager : MonoBehaviour
         }
     }
     */
-
-    void Start()
-    {
-        // 모듈화 예정
-        levelData = new int[1, 5, 5]{
-            {
-                { 0, 1, 2, 1, 0},
-                { 1, 2, 0, 2, 3},
-                { 3, 0, 3, 3, 1},
-                { 3, 2, 0, 2 ,1},
-                { 0, 3, 2, 1, 0}
-            }
-        };
-
-        CreateMap(levelData);
-    }
 }
 
 /*`
