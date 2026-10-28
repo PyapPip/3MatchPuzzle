@@ -22,14 +22,15 @@ public class FXManager : MonoBehaviour
 
     public void PlayMatchEffect(Vector2 _pos)
     {
-        if(countActiveEffect > matchEffectList.Count)
+        countActiveEffect++;
+
+        if (countActiveEffect > matchEffectList.Count)
         {
             Debug.Log(countActiveEffect);
             GameObject effect = CreateMatchEffect();
             effect.transform.position = _pos;
             effect.SetActive(true);
-            effect.GetComponent<Animation>().Play("Match_Pop_Effect");
-            countActiveEffect++;
+            effect.GetComponent<Animator>().Play("Match_Pop_Effect");
             return;
         }
 
@@ -42,8 +43,7 @@ public class FXManager : MonoBehaviour
                     Debug.Log(countActiveEffect);
                     matchEffectList[i].transform.position = _pos;
                     matchEffectList[i].SetActive(true);
-                    matchEffectList[i].GetComponent<Animation>().Play("Match_Pop_Effect");
-                    countActiveEffect++;
+                    matchEffectList[i].GetComponent<Animator>().Play("Match_Pop_Effect");
                     return;
                 }
             }

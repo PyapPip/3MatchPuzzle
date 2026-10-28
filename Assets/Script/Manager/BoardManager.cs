@@ -21,7 +21,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject cameraObject;
     [SerializeField] private FXManager fxManager;
 
-    private int speciesKind;
+    private int speciesKind;        
     private bool[,] matchedBlocks;                  //x y
     private int[] countMatchedBlock;                //x y
     private int debugCount = 0;
@@ -156,8 +156,7 @@ public class BoardManager : MonoBehaviour
                     countMatchedBlock[x]++;
                     GameObject targetBlock = BoardData[y, x];
                     blockManager.PlayDestroy(targetBlock);
-                    BoardData[y, x] = null;
-                    //fxManager.PlayMatchEffect(targetBlock.transform.position);
+                    fxManager.PlayMatchEffect(targetBlock.transform.position);
 
                     //파괴되었던 블럭 위의 블럭들에 얼마나 떨어져야하는지 저장
 
@@ -177,6 +176,7 @@ public class BoardManager : MonoBehaviour
                     continue;
 
                 Destroy(BoardData[y, x]);
+                BoardData[y, x] = null;
             }
         }
     }
@@ -226,8 +226,8 @@ public class BoardManager : MonoBehaviour
             for (int y = 0; y < countMatchedBlock[x]; y++)
             {
                 //조각 종류 랜덤, 보드상 좌표(x, fall값이 더해질것을 고려한 y), fall값, 실제 좌표
-                GameObject newBlock = 
-                    blockManager.CreateBlock(Random.Range(0, speciesKind), new Vector2Int(x, - y - 1), countMatchedBlock[x], new Vector2(x, y + 1));
+                GameObject newBlock =
+                    blockManager.CreateBlock(Random.Range(0, speciesKind + 1), new Vector2Int(x, -y - 1), countMatchedBlock[x], new Vector2(x, y + 1));
 
                 fallBlocks.Add(newBlock);
             }
@@ -319,7 +319,7 @@ public class BoardManager : MonoBehaviour
 
     private void Start()
     {
-        CreateMap(new int[0,0,0]);
+
     }
 
     /*

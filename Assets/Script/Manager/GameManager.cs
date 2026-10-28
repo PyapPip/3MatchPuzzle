@@ -163,13 +163,13 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if(gameState == GameState.destroy)
+        else if(gameState == GameState.destroy)
         {
             boardManager.DestroyMatchedBlock();
             ChangeGameState(GameState.settle);
         }
 
-        if (gameState == GameState.settle)
+        else if (gameState == GameState.settle)
         {
             ChangeGameState(GameState.check);
         }
