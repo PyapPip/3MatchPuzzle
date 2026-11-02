@@ -137,17 +137,16 @@ public class BlockMove : MonoBehaviour
 
     private void Destroy()
     {
+        if(this.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Block_Destroy"))
+        {
+            return;     
+        }       
         this.GetComponent<Animator>().Play("Block_Destroy");
     }
 
     //블럭 애니매이션이 끝났을때 호출하기 위한 함수. 애니메이션 이벤트에도 사용.
     private void callMoveEnd()
     {
-        if (GetComponentInParent<BlockManager>().moveBlockCount < 0)
-        {
-            Debug.Log("moveBlockCount < 0");
-            return;
-        }
         GetComponentInParent<BlockManager>().BlockMoveEnd();
     }
 }

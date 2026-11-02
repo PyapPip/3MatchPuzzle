@@ -70,6 +70,12 @@ public class BlockManager : MonoBehaviour
 
     public void BlockMoveEnd()
     {
+        if (moveBlockCount < 0)
+        {
+            Debug.Log("BlockMoveEnd ¿¹¿Ü");
+            return;
+        }
+
         moveBlockCount--;
         Debug.Log(moveBlockCount);
         if (moveBlockCount == 0)

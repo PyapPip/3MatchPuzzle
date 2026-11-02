@@ -22,8 +22,8 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private FXManager fxManager;
 
     private int speciesKind;        
-    private bool[,] matchedBlocks;                  //x y
-    private int[] countMatchedBlock;                //x y
+    private bool[,] matchedBlocks;                  //y x
+    private int[] countMatchedBlock;                //해당하는 x좌표에 몇개의 블럭이 매치되었는지 저장하는 배열
     private int debugCount = 0;
 
     public void InitBoard()
@@ -44,22 +44,22 @@ public class BoardManager : MonoBehaviour
     //블럭 스왑
     public void TrySwap(Vector2Int _selectBlockPos, Vector2Int _dir)
     {
-        int[,] virtualMap = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
-        int[,] matchData = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
-
-        Vector2Int selectBlock = _selectBlockPos;
+        int[,] virtualMap = new int[BoardData.GetLength(0), BoardData.GetLength(1)];
+        int[,] matchData = new int[BoardData.GetLength(0), BoardData.GetLength(1)];
+                
+        Vector2Int selectBlock = _selectBlockPos;               
         Vector2Int targetBlock = _selectBlockPos + _dir;
 
-        for (int x = 0; x < virtualMap.GetLength(0); x++)
+        for (int y = 0; y < virtualMap.GetLength(0); y++)
         {
-            for (int y = 0; y < virtualMap.GetLength(1); y++)
+            for (int x = 0; x < virtualMap.GetLength(1); x++)
             {
-                virtualMap[x, y] = BoardData[y, x].GetComponent<Block>().species;
+                virtualMap[y, x] = BoardData[y, x].GetComponent<Block>().species;                       
             }
         }
 
-        (virtualMap[selectBlock.x, selectBlock.y], virtualMap[targetBlock.x, targetBlock.y])
-        = (virtualMap[targetBlock.x, targetBlock.y], virtualMap[selectBlock.x, selectBlock.y]);
+        (virtualMap[selectBlock.y, selectBlock.x], virtualMap[targetBlock.y, targetBlock.x])
+        = (virtualMap[targetBlock.y, targetBlock.x], virtualMap[selectBlock.y, selectBlock.x]);
 
         bool matchResult = MatchCheck(virtualMap);
 
@@ -79,7 +79,7 @@ public class BoardManager : MonoBehaviour
         int prevShapes = -1;
         bool isMatched = false;
 
-        matchedBlocks = new bool[BoardData.GetLength(1), BoardData.GetLength(0)];
+        matchedBlocks = new bool[BoardData.GetLength(0), BoardData.GetLength(1)];
 
         //xy 검사
         for (int y = 0; y < _virtualMap.GetLength(1); y++)
@@ -89,14 +89,14 @@ public class BoardManager : MonoBehaviour
 
             for (int x = 0; x < _virtualMap.GetLength(0); x++)
             {
-                if (prevShapes == _virtualMap[x, y])
+                if (prevShapes == _virtualMap[y, x])
                 {
                     count++;
                 }
 
                 else
                 {
-                    prevShapes = _virtualMap[x, y];
+                    prevShapes = _virtualMap[y, x];
                     count = 1;
                 }
 
@@ -105,7 +105,7 @@ public class BoardManager : MonoBehaviour
                     isMatched = true;
                     for (int i = 0; i < count; i++)
                     {
-                        matchedBlocks[x - i, y] = true;
+                        matchedBlocks[y, x - i] = true;
                     }
                 }
             }
@@ -118,14 +118,14 @@ public class BoardManager : MonoBehaviour
 
             for (int y = 0; y < _virtualMap.GetLength(1); y++)
             {
-                if (prevShapes == _virtualMap[x, y])
+                if (prevShapes == _virtualMap[y, x])
                 {
                     count++;
                 }
 
                 else
                 {
-                    prevShapes = _virtualMap[x, y];
+                    prevShapes = _virtualMap[y, x];
                     count = 1;
                 }
 
@@ -134,7 +134,7 @@ public class BoardManager : MonoBehaviour
                     isMatched = true;
                     for (int i = 0; i < count; i++)
                     {
-                        matchedBlocks[x, y - i] = true;
+                        matchedBlocks[y - i, x] = true;
                     }
                 }
             }
@@ -147,11 +147,11 @@ public class BoardManager : MonoBehaviour
     {
         countMatchedBlock = new int[BoardData.GetLength(1)]; 
 
-        for (int y = 0; y < matchedBlocks.GetLength(1); y++)
+        for (int x = 0; x < matchedBlocks.GetLength(0); x++)
         {
-            for (int x = 0; x < matchedBlocks.GetLength(0); x++)
+            for (int y = 0; y < matchedBlocks.GetLength(1); y++)
             {
-                if (matchedBlocks[x,y])
+                if (matchedBlocks[y,x])
                 {
                     countMatchedBlock[x]++;
                     GameObject targetBlock = BoardData[y, x];
@@ -168,11 +168,11 @@ public class BoardManager : MonoBehaviour
 
     public void DestroyMatchedBlock()
     {
-        for(int y = 0; y < matchedBlocks.GetLength(0); y++)
+        for(int x = 0; x < matchedBlocks.GetLength(0); x++)
         {
-            for (int x = 0; x < matchedBlocks.GetLength(1); x++)
+            for (int y = 0; y < matchedBlocks.GetLength(1); y++)
             {
-                if (!matchedBlocks[x, y])
+                if (!matchedBlocks[y, x])
                     continue;
 
                 Destroy(BoardData[y, x]);
@@ -283,7 +283,7 @@ public class BoardManager : MonoBehaviour
 
     public void NowBoardCheck()
     {
-        int[,] virtualMap = new int[BoardData.GetLength(1), BoardData.GetLength(0)];
+        int[,] virtualMap = new int[BoardData.GetLength(0), BoardData.GetLength(1)];
 
         for (int x = 0; x < virtualMap.GetLength(0); x++)
         {
@@ -293,7 +293,7 @@ public class BoardManager : MonoBehaviour
                 {
                     Debug.Log("x:" + x + "   y:" + y);
                 }
-
+                    
                 else
                 {
                     virtualMap[x, y] = BoardData[y, x].GetComponent<Block>().species;
