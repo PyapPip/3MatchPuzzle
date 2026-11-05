@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.VFX;
 
 public class BoardManager : MonoBehaviour
 {
@@ -21,8 +20,11 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private GameObject cameraObject;
     [SerializeField] private FXManager fxManager;
 
-    private int speciesKind;        
+    private int mapWidth;       //x 길이
+    private int mapHeight;      //y 길이
+
     private bool[,] matchedBlocks;                  //y x
+    private int speciesKind;        
     private int[] countMatchedBlock;                //해당하는 x좌표에 몇개의 블럭이 매치되었는지 저장하는 배열
     private int debugCount = 0;
 
@@ -81,13 +83,13 @@ public class BoardManager : MonoBehaviour
 
         matchedBlocks = new bool[BoardData.GetLength(0), BoardData.GetLength(1)];
 
-        //xy 검사
-        for (int y = 0; y < _virtualMap.GetLength(1); y++)
+        //가로 검사
+        for (int y = 0; y < _virtualMap.GetLength(0); y++)
         {
             count = 1;  //새 행을 검사할때 마다 초기화
             prevShapes = -1;
 
-            for (int x = 0; x < _virtualMap.GetLength(0); x++)
+            for (int x = 0; x < _virtualMap.GetLength(1); x++)
             {
                 if (prevShapes == _virtualMap[y, x])
                 {
@@ -111,12 +113,13 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        for (int x = 0; x < _virtualMap.GetLength(0); x++)
+        //새로 검사
+        for (int x = 0; x < _virtualMap.GetLength(1); x++)
         {
             count = 0;  //새 열을 검사할때 마다 초기화
             prevShapes = -1;
 
-            for (int y = 0; y < _virtualMap.GetLength(1); y++)
+            for (int y = 0; y < _virtualMap.GetLength(0); y++)
             {
                 if (prevShapes == _virtualMap[y, x])
                 {
@@ -147,9 +150,9 @@ public class BoardManager : MonoBehaviour
     {
         countMatchedBlock = new int[BoardData.GetLength(1)]; 
 
-        for (int x = 0; x < matchedBlocks.GetLength(0); x++)
+        for (int x = 0; x < matchedBlocks.GetLength(1); x++)
         {
-            for (int y = 0; y < matchedBlocks.GetLength(1); y++)
+            for (int y = 0; y < matchedBlocks.GetLength(0); y++)
             {
                 if (matchedBlocks[y,x])
                 {
@@ -168,9 +171,9 @@ public class BoardManager : MonoBehaviour
 
     public void DestroyMatchedBlock()
     {
-        for(int x = 0; x < matchedBlocks.GetLength(0); x++)
+        for(int x = 0; x < matchedBlocks.GetLength(1); x++)
         {
-            for (int y = 0; y < matchedBlocks.GetLength(1); y++)
+            for (int y = 0; y < matchedBlocks.GetLength(0); y++)
             {
                 if (!matchedBlocks[y, x])
                     continue;
@@ -214,6 +217,9 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+
+        mapHeight = _levelData.GetLength(1);
+        mapWidth = _levelData.GetLength(2);
 
         cameraObject.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
     }
@@ -285,9 +291,9 @@ public class BoardManager : MonoBehaviour
     {
         int[,] virtualMap = new int[BoardData.GetLength(0), BoardData.GetLength(1)];
 
-        for (int x = 0; x < virtualMap.GetLength(0); x++)
+        for (int y = 0; y < virtualMap.GetLength(0); y++)
         {
-            for (int y = 0; y < virtualMap.GetLength(1); y++)
+            for (int x = 0; x < virtualMap.GetLength(1); x++)
             {
                 if (BoardData[y, x] == null)
                 {
@@ -296,7 +302,7 @@ public class BoardManager : MonoBehaviour
                     
                 else
                 {
-                    virtualMap[x, y] = BoardData[y, x].GetComponent<Block>().species;
+                    virtualMap[y, x] = BoardData[y, x].GetComponent<Block>().species;
                 }
             }
         }
