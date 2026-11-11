@@ -36,13 +36,13 @@ public class BoardManager : MonoBehaviour
     //사이클이 끝날때마다 초기화
     public void InitBoard()
     {
-        countMatchedBlock = null;
-        matchedBlocks = null;
-        countMatchedBlock = null;
-
         //죽은 보드인지 확인 후 처리하는 함수 있을 예정
 
-        for(int y = 0; y < mapHeight; y++)
+        countMatchedBlock = null;
+        matchedBlocks = null;   
+        countMatchedBlock = null;
+
+        for (int y = 0; y < mapHeight; y++)
         {
             for(int x = 0; x < mapWidth; x++)
             {
@@ -263,6 +263,7 @@ public class BoardManager : MonoBehaviour
         for (int i = _fallBlockList.Count - 1; i >= 0; i--)
         {
             GameObject block = _fallBlockList[i];
+
             if (block == null)
                 continue;
 
@@ -272,6 +273,7 @@ public class BoardManager : MonoBehaviour
             {
                 virtualMap[blockComponent.boardPos.y + blockComponent.fall, blockComponent.boardPos.x] = block;
                 blockComponent.boardPos.y += blockComponent.fall;
+                blockComponent.isMoved = true;
             }
         }
 
@@ -335,7 +337,7 @@ public class BoardManager : MonoBehaviour
     }
 
 
-    void DeadBoardCheck()
+    private bool DeadBoardCheck()
     {
         List<Vector2Int> needCheckBlockList = new List<Vector2Int>();
 
@@ -354,29 +356,27 @@ public class BoardManager : MonoBehaviour
         {
             Vector2Int blockPos = needCheckBlockList[i];
             // 필요한 작업 수행
-            if (blockPos.x > 0)
+            if (blockPos.x > 0 && TrySwap(blockPos, Vector2Int.left))
             {
-                TrySwap(blockPos, Vector2Int.left);
+                return false;
             }
-            if (blockPos.x < mapWidth - 1)
+            if (blockPos.x < mapWidth - 1 && TrySwap(blockPos, Vector2Int.right))
             {
-                TrySwap(blockPos, Vector2Int.right);
+                return false;
             }
-            if (blockPos.y > 0)
+            if (blockPos.y > 0 && TrySwap(blockPos, Vector2Int.down))
             {
-                TrySwap(blockPos, Vector2Int.up);
+                return false;
             }
-            if (blockPos.y < mapHeight - 1)
+            if (blockPos.y < mapHeight - 1 && TrySwap(blockPos, Vector2Int.up))
             {
-                TrySwap(blockPos, Vector2Int.down);
+                return false;
             }
         }
+
+        return true;
     }
 
-    private void Start()
-    {
-
-    }
 
     /*
     void AddBoardData(GameObject _newBlock, Vector2Int _boardPos)
