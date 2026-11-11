@@ -27,7 +27,7 @@ public class BlockManager : MonoBehaviour
         instance.GetComponent<Block>().species = _shapes;
         instance.GetComponent<Block>().fall = _fall;
         instance.transform.position = _position;
-
+                        
         return instance;
     }
 

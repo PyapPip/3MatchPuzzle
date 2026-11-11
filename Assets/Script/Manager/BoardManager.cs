@@ -26,52 +26,64 @@ public class BoardManager : MonoBehaviour
     private bool[,] matchedBlocks;                  //y x
     private int speciesKind;        
     private int[] countMatchedBlock;                //해당하는 x좌표에 몇개의 블럭이 매치되었는지 저장하는 배열
-    private int debugCount = 0;
 
+    //BoardData에서 게임오브젝트 받아오기
+    public GameObject GetBlock(Vector2Int _pos)
+    {
+        return BoardData[_pos.y, _pos.x]; 
+    }
+
+    //사이클이 끝날때마다 초기화
     public void InitBoard()
     {
         countMatchedBlock = null;
         matchedBlocks = null;
         countMatchedBlock = null;
 
-        for(int y = 0; y < BoardData.GetLength(0); y++)
+        //죽은 보드인지 확인 후 처리하는 함수 있을 예정
+
+        for(int y = 0; y < mapHeight; y++)
         {
-            for(int x = 0; x < BoardData.GetLength(1); x++)
+            for(int x = 0; x < mapWidth; x++)
             {
-                BoardData[y,x].GetComponent<Block>().fall = 0;
+                BoardData[y, x].GetComponent<Block>().fall = 0;
+                BoardData[y, x].GetComponent<Block>().isMoved = false;
             }
         }
+
     }
 
-    //블럭 스왑
-    public void TrySwap(Vector2Int _selectBlockPos, Vector2Int _dir)
+    //스왑 시도
+    public bool TrySwap(Vector2Int _selectBlockPos, Vector2Int _dir)
     {
-        int[,] virtualMap = new int[BoardData.GetLength(0), BoardData.GetLength(1)];
-        int[,] matchData = new int[BoardData.GetLength(0), BoardData.GetLength(1)];
-                
-        Vector2Int selectBlock = _selectBlockPos;               
+        int[,] virtualMap = new int[mapHeight, mapWidth];
+        int[,] matchData = new int[mapHeight, mapWidth];
+                           
         Vector2Int targetBlock = _selectBlockPos + _dir;
 
-        for (int y = 0; y < virtualMap.GetLength(0); y++)
+        for (int y = 0; y < mapHeight; y++)
         {
-            for (int x = 0; x < virtualMap.GetLength(1); x++)
+            for (int x = 0; x < mapWidth; x++)
             {
                 virtualMap[y, x] = BoardData[y, x].GetComponent<Block>().species;                       
             }
         }
 
-        (virtualMap[selectBlock.y, selectBlock.x], virtualMap[targetBlock.y, targetBlock.x])
-        = (virtualMap[targetBlock.y, targetBlock.x], virtualMap[selectBlock.y, selectBlock.x]);
+        (virtualMap[_selectBlockPos.y, _selectBlockPos.x], virtualMap[targetBlock.y, targetBlock.x])
+        = (virtualMap[targetBlock.y, targetBlock.x], virtualMap[_selectBlockPos.y, _selectBlockPos.x]);
 
         bool matchResult = MatchCheck(virtualMap);
 
-        if (matchResult)
-        {
-            (BoardData[selectBlock.y, selectBlock.x], BoardData[targetBlock.y, targetBlock.x])
-            = (BoardData[targetBlock.y, targetBlock.x], BoardData[selectBlock.y, selectBlock.x]);
-        }
+        return matchResult;
+    }
 
-        gameManager.GetMatchResult(matchResult, BoardData[selectBlock.y, selectBlock.x], BoardData[targetBlock.y, targetBlock.x]);
+    //실제 블럭 스왑
+    public void BlockSwap(Vector2Int _selectBlockPos, Vector2Int _dir)
+    {
+        Vector2Int targetBlock = _selectBlockPos + _dir;
+
+        (BoardData[_selectBlockPos.y, _selectBlockPos.x], BoardData[targetBlock.y, targetBlock.x])
+            = (BoardData[targetBlock.y, targetBlock.x], BoardData[_selectBlockPos.y, _selectBlockPos.x]);
     }
 
     //매치 확인
@@ -81,15 +93,15 @@ public class BoardManager : MonoBehaviour
         int prevShapes = -1;
         bool isMatched = false;
 
-        matchedBlocks = new bool[BoardData.GetLength(0), BoardData.GetLength(1)];
+        matchedBlocks = new bool[mapHeight, mapWidth];
 
         //가로 검사
-        for (int y = 0; y < _virtualMap.GetLength(0); y++)
+        for (int y = 0; y < mapHeight; y++)
         {
             count = 1;  //새 행을 검사할때 마다 초기화
             prevShapes = -1;
 
-            for (int x = 0; x < _virtualMap.GetLength(1); x++)
+            for (int x = 0; x < mapWidth; x++)
             {
                 if (prevShapes == _virtualMap[y, x])
                 {
@@ -114,12 +126,12 @@ public class BoardManager : MonoBehaviour
         }
 
         //새로 검사
-        for (int x = 0; x < _virtualMap.GetLength(1); x++)
+        for (int x = 0; x < mapWidth; x++)
         {
             count = 0;  //새 열을 검사할때 마다 초기화
             prevShapes = -1;
 
-            for (int y = 0; y < _virtualMap.GetLength(0); y++)
+            for (int y = 0; y < mapHeight; y++)
             {
                 if (prevShapes == _virtualMap[y, x])
                 {
@@ -146,13 +158,14 @@ public class BoardManager : MonoBehaviour
         return isMatched;
     }
 
+    //매치된 블럭 상호작용, 매치된 블럭에 파괴 애니메이션을 재생시키고, 위의 블럭들이 얼마나 떨어져야하는지 계산
     public void ResolveMatchedBlock()
     {
-        countMatchedBlock = new int[BoardData.GetLength(1)]; 
+        countMatchedBlock = new int[mapWidth]; 
 
-        for (int x = 0; x < matchedBlocks.GetLength(1); x++)
+        for (int x = 0; x < mapWidth; x++)
         {
-            for (int y = 0; y < matchedBlocks.GetLength(0); y++)
+            for (int y = 0; y < mapHeight; y++)
             {
                 if (matchedBlocks[y,x])
                 {
@@ -169,11 +182,12 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    //매치된 블럭을 파괴. 파괴 애니매이션이 끝나고 호출 됨
     public void DestroyMatchedBlock()
     {
-        for(int x = 0; x < matchedBlocks.GetLength(1); x++)
+        for(int x = 0; x < mapWidth; x++)
         {
-            for (int y = 0; y < matchedBlocks.GetLength(0); y++)
+            for (int y = 0; y < mapHeight; y++)
             {
                 if (!matchedBlocks[y, x])
                     continue;
@@ -184,6 +198,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    //해당하는 블럭이 파괴되었을때 위의 블럭들이 얼마나 떨어져야하는지 계산
     private void AddFallAbove(int _boardX, int _upperY)
     {
         for (int y = _upperY - 1; y >= 0; y--)
@@ -200,30 +215,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    //이 주석 아래는 수정 예정
-    public void CreateMap(int[,,] _levelData)                                           
-    {
-        BoardData = new GameObject[_levelData.GetLength(1), _levelData.GetLength(2)];
-
-        for (int y = 0; y < _levelData.GetLength(1); y++)
-        { 
-            for (int x = 0; x < _levelData.GetLength(2); x++)
-            {
-                BoardData[y, x] = blockManager.CreateBlock(_levelData[0, y, x], x, y);
-
-                if (speciesKind < _levelData[0, y, x])
-                {
-                    speciesKind = _levelData[0, y, x];
-                }
-            }
-        }
-
-        mapHeight = _levelData.GetLength(1);
-        mapWidth = _levelData.GetLength(2);
-
-        cameraObject.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
-    }
-
+    //매치된 블럭을 제거한 후, 새로운 블럭이 생성
     public List<GameObject> BlockReSpawn()
     {
         List<GameObject> fallBlocks = new List<GameObject>();
@@ -236,20 +228,21 @@ public class BoardManager : MonoBehaviour
                     blockManager.CreateBlock(Random.Range(0, speciesKind + 1), new Vector2Int(x, -y - 1), countMatchedBlock[x], new Vector2(x, y + 1));
 
                 fallBlocks.Add(newBlock);
+                newBlock.GetComponent<Block>().isMoved = true;
             }
         }
-        debugCount++;
 
         return ResolveFall(fallBlocks);
-    }                   
+    }
 
+    //생성된 블럭과 기존 블럭들을 fall값에 맞게 실제 좌표로 떨어뜨리고, BoardData를 갱신
     public List<GameObject> ResolveFall(List<GameObject> _fallBlockList)
     {   
-        GameObject[,] virtualMap = new GameObject[BoardData.GetLength(0), BoardData.GetLength(1)];
+        GameObject[,] virtualMap = new GameObject[mapHeight, mapWidth];
 
-        for (int y = BoardData.GetLength(0) - 1; y >= 0; y--)
+        for (int y = mapHeight - 1; y >= 0; y--)
         {
-            for (int x = 0; x < BoardData.GetLength(1); x++)
+            for (int x = 0; x < mapWidth; x++)
             {
                 if (BoardData[y, x] == null)
                     continue;
@@ -287,23 +280,16 @@ public class BoardManager : MonoBehaviour
         return _fallBlockList;
     }
 
+    //게임 상태가 check일때 호출되는 함수. 현재 보드에서 매치가 가능한지 확인
     public void NowBoardCheck()
     {
-        int[,] virtualMap = new int[BoardData.GetLength(0), BoardData.GetLength(1)];
+        int[,] virtualMap = new int[mapHeight, mapWidth];
 
-        for (int y = 0; y < virtualMap.GetLength(0); y++)
+        for (int y = 0; y < mapHeight; y++)
         {
-            for (int x = 0; x < virtualMap.GetLength(1); x++)
+            for (int x = 0; x < mapWidth; x++)
             {
-                if (BoardData[y, x] == null)
-                {
-                    Debug.Log("x:" + x + "   y:" + y);
-                }
-                    
-                else
-                {
-                    virtualMap[y, x] = BoardData[y, x].GetComponent<Block>().species;
-                }
+                virtualMap[y, x] = BoardData[y, x].GetComponent<Block>().species;
             }
         }
 
@@ -320,6 +306,70 @@ public class BoardManager : MonoBehaviour
         else
         {
             gameManager.ChangeGameState(GameState.wait);
+        }
+    }
+
+
+    //이 주석 아래는 수정 예정
+    public void CreateMap(int[,,] _levelData)
+    {
+        mapHeight = _levelData.GetLength(1);
+        mapWidth = _levelData.GetLength(2);
+
+        BoardData = new GameObject[mapHeight, mapWidth];
+
+        for (int y = 0; y < mapHeight; y++)
+        {
+            for (int x = 0; x < mapWidth; x++)
+            {
+                BoardData[y, x] = blockManager.CreateBlock(_levelData[0, y, x], x, y);
+
+                if (speciesKind < _levelData[0, y, x])
+                {
+                    speciesKind = _levelData[0, y, x];
+                }
+            }
+        }
+
+        cameraObject.transform.position = new Vector3(_levelData.GetLength(2) / 2, -_levelData.GetLength(1) / 2, -1);
+    }
+
+
+    void DeadBoardCheck()
+    {
+        List<Vector2Int> needCheckBlockList = new List<Vector2Int>();
+
+        for (int y = 0; y < mapHeight; y++)
+        {
+            for (int x = 0; x < mapWidth; x++)
+            {
+                if(BoardData[y, x].GetComponent<Block>().isMoved)
+                {
+                    needCheckBlockList.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+
+        for (int i = 0; i < needCheckBlockList.Count; i++)
+        {
+            Vector2Int blockPos = needCheckBlockList[i];
+            // 필요한 작업 수행
+            if (blockPos.x > 0)
+            {
+                TrySwap(blockPos, Vector2Int.left);
+            }
+            if (blockPos.x < mapWidth - 1)
+            {
+                TrySwap(blockPos, Vector2Int.right);
+            }
+            if (blockPos.y > 0)
+            {
+                TrySwap(blockPos, Vector2Int.up);
+            }
+            if (blockPos.y < mapHeight - 1)
+            {
+                TrySwap(blockPos, Vector2Int.down);
+            }
         }
     }
 

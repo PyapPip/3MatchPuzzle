@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameState gameState;
 
     private Vector2Int SelectBlockPos = new Vector2Int(-1, -1);      //초기값
+    private Vector2Int Diff = new Vector2Int(0, 0);
     private bool isMatched;
 
     /// <summary>
@@ -33,8 +34,7 @@ public class GameManager : MonoBehaviour
     public void ChangeGameState(GameState _state)
     {
         gameState = _state;
-
-        //Debug.Log(gameState);
+        Debug.Log(gameState);
 
         switch (gameState)
         {
@@ -67,9 +67,7 @@ public class GameManager : MonoBehaviour
                                 Debug.Log("Pos" + block.boardPos + " BlockSpecies:" + block.species + " BoardData:"
                                     + boardManager.BoardData[block.boardPos.y, block.boardPos.x].GetComponent<Block>().species);
                             }
-
                         }
-
                         break;
                     }
                     //*/
@@ -108,16 +106,16 @@ public class GameManager : MonoBehaviour
                 }
             case GameState.select:
                 {
-                    Vector2Int diff = _pos - SelectBlockPos;
+                    Diff = _pos - SelectBlockPos;
 
                     //인접한 블럭 클릭 시
-                    if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) == 1)
+                    if (Mathf.Abs(Diff.x) + Mathf.Abs(Diff.y) == 1)
                     {
-                        boardManager.TrySwap(SelectBlockPos, diff);
+                        GetMatchResult(boardManager.TrySwap(SelectBlockPos, Diff));
                     }
 
                     //먼 거리 -> 재 선택
-                    else if (Mathf.Abs(diff.x) + Mathf.Abs(diff.y) > 1)
+                    else if (Mathf.Abs(Diff.x) + Mathf.Abs(Diff.y) > 1)
                     {
                         SelectBlockPos = _pos;
                     }
@@ -134,13 +132,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void GetMatchResult(bool _result, GameObject _block1, GameObject _block2)
+    //수정 진행중
+    public void GetMatchResult(bool _result)
     {
         ChangeGameState(GameState.trySwap);
         isMatched = _result;
 
+        GameObject _block1  = boardManager.GetBlock(SelectBlockPos);
+        GameObject _block2  = boardManager.GetBlock(SelectBlockPos + Diff);
+
         if (isMatched)
         {
+            boardManager.BlockSwap(SelectBlockPos, Diff);
             blockManager.PlaySwap(_block1, _block2);
         }
         else
@@ -177,6 +180,7 @@ public class GameManager : MonoBehaviour
 
     public void CycleEndInit()
     {
+        Diff = new Vector2Int(0, 0);
         SelectBlockPos = new Vector2Int(-1, -1);
         isMatched = false;
         boardManager.InitBoard();
